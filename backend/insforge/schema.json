@@ -1,0 +1,199 @@
+{
+  "tables": [
+    {
+      "name": "users",
+      "description": "University students",
+      "columns": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "unique": true,
+          "not_null": true
+        },
+        {
+          "name": "full_name",
+          "type": "VARCHAR(255)",
+          "not_null": true
+        },
+        {
+          "name": "student_id",
+          "type": "VARCHAR(50)",
+          "unique": true
+        },
+        {
+          "name": "phone",
+          "type": "VARCHAR(20)"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "lost_reports",
+      "description": "Reports of lost items",
+      "columns": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "student_id",
+          "type": "UUID",
+          "foreign_key": "users.id",
+          "not_null": true
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR(50)",
+          "not_null": true,
+          "enum": ["id_card", "charger", "bottle", "notebook", "headphones", "keys", "other"]
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "not_null": true
+        },
+        {
+          "name": "color",
+          "type": "VARCHAR(50)"
+        },
+        {
+          "name": "location_lost",
+          "type": "VARCHAR(255)",
+          "not_null": true
+        },
+        {
+          "name": "time_lost",
+          "type": "TIMESTAMP",
+          "not_null": true
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "enum": ["active", "matched", "closed"],
+          "default": "active"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "found_reports",
+      "description": "Reports of found items",
+      "columns": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "student_id",
+          "type": "UUID",
+          "foreign_key": "users.id",
+          "not_null": true
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR(50)",
+          "not_null": true,
+          "enum": ["id_card", "charger", "bottle", "notebook", "headphones", "keys", "other"]
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "not_null": true
+        },
+        {
+          "name": "color",
+          "type": "VARCHAR(50)"
+        },
+        {
+          "name": "location_found",
+          "type": "VARCHAR(255)",
+          "not_null": true
+        },
+        {
+          "name": "time_found",
+          "type": "TIMESTAMP",
+          "not_null": true
+        },
+        {
+          "name": "finder_contact",
+          "type": "VARCHAR(255)",
+          "not_null": true
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "enum": ["active", "matched", "closed"],
+          "default": "active"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "match_results",
+      "description": "Results of matching lost with found items",
+      "columns": [
+        {
+          "name": "id",
+          "type": "UUID",
+          "primary": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "lost_report_id",
+          "type": "UUID",
+          "foreign_key": "lost_reports.id",
+          "not_null": true
+        },
+        {
+          "name": "found_report_id",
+          "type": "UUID",
+          "foreign_key": "found_reports.id",
+          "not_null": true
+        },
+        {
+          "name": "confidence_score",
+          "type": "FLOAT",
+          "not_null": true,
+          "comment": "Value between 0.0 and 1.0"
+        },
+        {
+          "name": "explanation",
+          "type": "TEXT",
+          "not_null": true
+        },
+        {
+          "name": "feature_scores",
+          "type": "JSONB",
+          "comment": "Breakdown of individual feature scores"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "now()"
+        }
+      ]
+    }
+  ]
+}

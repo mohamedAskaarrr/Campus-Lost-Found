@@ -1,0 +1,32 @@
+{
+  "servers": {
+    "github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server:1.0.3"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "%GITHUB_PERSONAL_ACCESS_TOKEN%"
+      }
+    },
+    "uiux-pro-max": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["C:\\Users\\Lenovo\\uiux-mcp-server\\index.js"]
+    },
+    "claude-api": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/claude-code"],
+      "env": {
+        "ANTHROPIC_API_KEY": "%ANTHROPIC_API_KEY%"
+      }
+    }
+  }
+}
