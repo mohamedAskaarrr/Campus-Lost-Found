@@ -5,38 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Campus Lost and Found</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          head: ['Sora', 'sans-serif'],
+          body: ['Outfit', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            50: '#f0fffe',
+            500: '#0f8b8d',
+            600: '#0d7a7b',
+            700: '#0b6a6c',
+            dark: '#34a9ab'
+          },
+          accent: {
+            red: '#f25f5c',
+            gold: '#f4b942',
+            green: '#2f9e44'
+          },
+          stone: {
+            paper: '#ffffff',
+            paper_alt: '#f2efe6',
+            bg: '#f7f5ef',
+            line: '#ddd5c4'
+          }
+        },
+        animation: {
+          'float-orb': 'floatOrb 13s ease-in-out infinite',
+          'rise-in': 'riseIn 0.55s ease both',
+          'pulse-dot': 'pulseDot 1.5s ease infinite',
+          'spin-slow': 'spin 0.8s linear infinite',
+        },
+        keyframes: {
+          floatOrb: {
+            '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+            '50%': { transform: 'translate(0, 22px) scale(1.06)' }
+          },
+          riseIn: {
+            'from': { opacity: '0', transform: 'translateY(16px)' },
+            'to': { opacity: '1', transform: 'translateY(0)' }
+          },
+          pulseDot: {
+            '0%, 100%': { transform: 'scale(1)', opacity: '0.9' },
+            '50%': { transform: 'scale(0.74)', opacity: '0.5' }
+          }
+        },
+        backdropBlur: {
+          xs: '2px',
+          sm: '4px',
+        }
+      }
+    }
+  }
+</script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #f7f5ef;
-    --ink: #1f2a30;
-    --ink-soft: #55656f;
-    --paper: #ffffff;
-    --paper-2: #f2efe6;
-    --line: #ddd5c4;
-    --brand: #0f8b8d;
-    --brand-2: #f25f5c;
-    --accent: #f4b942;
-    --success: #2f9e44;
-    --radius-xl: 20px;
-    --radius-md: 12px;
-    --shadow-soft: 0 14px 40px rgba(31, 42, 48, 0.1);
-    --shadow-pop: 0 18px 50px rgba(15, 139, 141, 0.18);
-    --font-head: 'Sora', sans-serif;
-    --font-body: 'Outfit', sans-serif;
+  @keyframes floatOrb {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(0, 22px) scale(1.06); }
   }
 
-  body {
-    min-height: 100vh;
-    font-family: var(--font-body);
-    color: var(--ink);
-    background:
-      radial-gradient(circle at 5% 0%, rgba(242, 95, 92, 0.18), transparent 32%),
-      radial-gradient(circle at 90% 10%, rgba(15, 139, 141, 0.22), transparent 38%),
-      linear-gradient(180deg, #faf8f2 0%, #f7f5ef 100%);
-    line-height: 1.5;
-    overflow-x: hidden;
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(0.74); opacity: 0.5; }
   }
 
   body::before,
@@ -66,809 +106,197 @@
     animation-delay: -5.5s;
   }
 
-  @keyframes floatOrb {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(0, 22px) scale(1.06); }
+  .dark body::before {
+    background: rgba(100, 116, 139, 0.2);
   }
 
-  .container {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 24px 22px 42px;
-    position: relative;
-    z-index: 1;
+  .dark body::after {
+    background: rgba(30, 41, 59, 0.2);
   }
 
-  header {
-    margin-bottom: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-soft);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
+  /* Smooth color transitions */
+  * {
+    @apply transition-colors duration-300;
   }
 
-  .header-inner {
-    padding: 18px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .logo-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--brand), #47b8b9);
-    color: #ffffff;
-    font-family: var(--font-head);
-    font-size: 17px;
-    font-weight: 800;
-    display: grid;
-    place-items: center;
-    letter-spacing: 0.03em;
-    box-shadow: 0 12px 24px rgba(15, 139, 141, 0.35);
-  }
-
-  .logo-text {
-    font-family: var(--font-head);
-    font-size: 25px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  .logo-text span { color: var(--brand); }
-
-  .subtitle {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-  }
-
-  .stats-bar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .stat-pill {
-    background: linear-gradient(180deg, #ffffff 0%, #f7f5ef 100%);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: var(--ink-soft);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 8px 20px rgba(31, 42, 48, 0.06);
-  }
-
-  .stat-pill strong {
-    color: var(--ink);
-    font-weight: 700;
-  }
-
-  .tabs {
-    margin-bottom: 26px;
-    display: inline-flex;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.86);
-    border: 1px solid #e5dcc8;
-    border-radius: 14px;
-    padding: 6px;
-    box-shadow: var(--shadow-soft);
-  }
-
-  .tab {
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-family: var(--font-head);
-    font-size: 13px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    background: transparent;
-    color: var(--ink-soft);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .tab:hover {
-    color: var(--ink);
-    background: rgba(15, 139, 141, 0.08);
-  }
-
-  .tab.active {
-    background: var(--ink);
-    color: #f8f7f3;
-    box-shadow: 0 10px 20px rgba(31, 42, 48, 0.2);
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-
-  .panel {
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid #e6dfcf;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-soft);
-    overflow: hidden;
-    animation: riseIn 0.55s ease both;
-  }
-
-  .panel-header {
-    padding: 16px 18px;
-    border-bottom: 1px solid #e9e2d3;
-    font-family: var(--font-head);
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    color: var(--ink-soft);
-  }
-
-  .panel-body { padding: 18px; }
-
-  @keyframes riseIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .form-group { margin-bottom: 14px; }
-
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 11px;
-    color: var(--ink-soft);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  input,
-  select,
-  textarea {
-    width: 100%;
-    border: 1px solid #dcd2bf;
-    border-radius: var(--radius-md);
-    background: #fffcf7;
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 14px;
-    padding: 10px 12px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    outline: none;
-  }
-
-  input:focus,
-  select:focus,
-  textarea:focus {
-    border-color: rgba(15, 139, 141, 0.6);
-    box-shadow: 0 0 0 4px rgba(15, 139, 141, 0.14);
-  }
-
-  textarea { resize: vertical; min-height: 96px; }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 11px;
-  }
-
-  .mode-toggle {
-    display: flex;
-    border: 1px solid #d8cfbe;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 18px;
-    background: #fff8ec;
-  }
-
-  .mode-btn {
-    flex: 1;
-    border: none;
-    cursor: pointer;
-    background: transparent;
-    color: var(--ink-soft);
-    font-family: var(--font-head);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 11px 8px;
-    transition: all 0.2s ease;
-  }
-
-  .mode-btn.active {
-    background: var(--brand-2);
-    color: #fff;
-  }
-
-  .mode-btn.active.found-mode {
-    background: var(--brand);
-    color: #fff;
-  }
-
-  .mode-btn:not(.active):hover {
-    color: var(--ink);
-    background: rgba(31, 42, 48, 0.06);
-  }
-
-  .status-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(15, 139, 141, 0.28);
-    background: rgba(15, 139, 141, 0.1);
-    color: #0d6f70;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--brand);
-    animation: pulse 1.5s ease infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(0.74); opacity: 0.5; }
-  }
-
-  .btn-primary {
-    width: 100%;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    font-family: var(--font-head);
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    background: linear-gradient(135deg, var(--brand), #34a9ab);
-    color: #ffffff;
-    box-shadow: 0 14px 26px rgba(15, 139, 141, 0.26);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-pop);
-  }
-
-  .btn-primary:active { transform: translateY(0); }
-
-  .results-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    gap: 14px;
-  }
-
-  .results-title {
-    font-family: var(--font-head);
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  .results-count {
-    font-size: 12px;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .match-card {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #ddd3c2;
-    border-radius: var(--radius-xl);
-    padding: 16px;
-    margin-bottom: 11px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    box-shadow: 0 8px 20px rgba(31, 42, 48, 0.08);
-    animation: riseIn 0.45s ease both;
-  }
-
-  .match-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(31, 42, 48, 0.12);
-    border-color: rgba(15, 139, 141, 0.5);
-  }
-
-  .match-card.top-match {
-    border-color: rgba(15, 139, 141, 0.62);
-    box-shadow: 0 20px 38px rgba(15, 139, 141, 0.22);
-    position: relative;
-  }
-
-  .match-card.top-match::before {
-    content: 'Top Match';
-    position: absolute;
-    right: 12px;
-    top: 0;
-    transform: translateY(-50%);
-    background: var(--accent);
-    color: #2f2200;
-    border: 1px solid rgba(244, 185, 66, 0.5);
-    border-radius: 999px;
-    padding: 3px 9px;
-    font-size: 10px;
-    font-family: var(--font-head);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
-
-  .match-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 9px;
-  }
-
-  .match-id {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .match-cat-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #dcccae;
-    background: #fff4db;
-    color: #785a1f;
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-
-  .cat-code {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(244, 185, 66, 0.25);
-    border: 1px solid rgba(120, 90, 31, 0.2);
-    display: grid;
-    place-items: center;
-    font-size: 10px;
-    font-family: var(--font-head);
-    letter-spacing: 0.02em;
-  }
-
-  .match-desc {
-    font-size: 14px;
-    color: var(--ink);
-    line-height: 1.45;
-  }
-
-  .score-ring {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-family: var(--font-head);
-    font-size: 13px;
-    font-weight: 700;
-    flex-shrink: 0;
-    backdrop-filter: blur(2px);
-  }
-
-  .match-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-  }
-
-  .meta-tag {
-    border: 1px solid #d6ccba;
-    background: #fffefb;
-    border-radius: 8px;
-    padding: 4px 9px;
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
-
-  .reasons-list {
-    border-top: 1px solid #ebdfcc;
-    margin-top: 10px;
-    padding-top: 10px;
-  }
-
-  .reasons-list h4 {
-    font-size: 10px;
-    color: var(--ink-soft);
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .reason-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border-radius: 7px;
-    padding: 3px 8px;
-    margin: 0 4px 4px 0;
-    font-size: 11px;
-    color: #1b6a2d;
-    border: 1px solid rgba(47, 158, 68, 0.2);
-    background: rgba(47, 158, 68, 0.1);
-  }
-
-  .empty-state {
-    border: 1px dashed #d3c9b7;
-    border-radius: var(--radius-xl);
-    background: rgba(255, 255, 255, 0.75);
-    min-height: 260px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 24px;
-    gap: 8px;
-  }
-
-  .empty-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(15, 139, 141, 0.18), rgba(242, 95, 92, 0.18));
-    border: 1px solid rgba(15, 139, 141, 0.25);
-    display: grid;
-    place-items: center;
-    font-family: var(--font-head);
-    font-size: 13px;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-  }
-
-  .empty-title {
-    font-family: var(--font-head);
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .empty-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    max-width: 360px;
-  }
-
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 50px 16px;
-    font-size: 14px;
-    color: var(--ink-soft);
-  }
-
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #d0c5b0;
-    border-top-color: var(--brand);
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .confidence-bar {
-    margin-top: 8px;
-    border-radius: 999px;
-    background: #eee5d5;
-    height: 8px;
-    overflow: hidden;
-  }
-
-  .confidence-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--accent), var(--brand));
-    transition: width 0.55s ease;
-  }
-
-  .section-tabs {
-    margin-bottom: 18px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .section-tab {
-    border: 1px solid #d8cdbb;
-    background: rgba(255, 255, 255, 0.78);
-    color: var(--ink-soft);
-    border-radius: 999px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-family: var(--font-head);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    transition: all 0.2s ease;
-  }
-
-  .section-tab.active {
-    background: var(--brand);
-    color: #fff;
-    border-color: rgba(15, 139, 141, 0.6);
-  }
-
-  .filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 14px;
-  }
-
-  .filter-chip {
-    border: 1px solid #d9cfbd;
-    background: #fff;
-    color: var(--ink-soft);
-    border-radius: 999px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 12px;
-    font-family: var(--font-body);
-    transition: all 0.2s ease;
-  }
-
-  .filter-chip:hover { border-color: rgba(15, 139, 141, 0.5); color: var(--ink); }
-
-  .filter-chip.active {
-    background: #1f2a30;
-    border-color: #1f2a30;
-    color: #fff;
-    font-weight: 600;
-  }
-
-  .reports-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .report-item {
-    border: 1px solid #d9cfbd;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.84);
-    box-shadow: 0 8px 18px rgba(31, 42, 48, 0.06);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: transform 0.2s ease;
-  }
-
-  .report-item:hover { transform: translateY(-1px); }
-
-  .report-badge {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    font-family: var(--font-head);
-    font-size: 11px;
-    color: #334149;
-    border: 1px solid #dbcdb0;
-    background: #ffefca;
-    flex-shrink: 0;
-  }
-
-  .badge-lost { background: rgba(242, 95, 92, 0.16); border-color: rgba(242, 95, 92, 0.32); }
-  .badge-found { background: rgba(15, 139, 141, 0.16); border-color: rgba(15, 139, 141, 0.32); }
-
-  .report-info { flex: 1; min-width: 0; }
-
-  .report-name {
-    font-size: 13px;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .report-meta {
-    margin-top: 2px;
-    font-size: 11px;
-    color: var(--ink-soft);
-  }
-
-  .report-loc {
-    font-size: 12px;
-    color: var(--ink-soft);
-    white-space: nowrap;
-  }
-
-  .toast {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 999;
-    border-radius: 12px;
-    border: 1px solid #d6ccb9;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: var(--shadow-soft);
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transform: translateY(70px);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-
-  .toast.show {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  .toast.success {
-    border-color: rgba(47, 158, 68, 0.35);
-  }
-
-  .toast-icon {
-    font-family: var(--font-head);
-    font-size: 11px;
-    border-radius: 7px;
-    padding: 2px 8px;
-    background: rgba(47, 158, 68, 0.12);
-    color: #1f7a33;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .slide-fade {
-    animation: riseIn 0.45s ease both;
-  }
-
-  .tab-panel {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.28s ease, transform 0.28s ease;
-  }
-
-  .tab-panel.is-active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .reasons-list {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.22s ease, margin-top 0.3s ease, padding-top 0.3s ease;
-    margin-top: 0;
-    padding-top: 0;
-    border-top: none;
-  }
-
-  .reasons-list.is-open {
-    opacity: 1;
-    max-height: 280px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #ebdfcc;
-  }
-
-  .reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: transform 0.36s ease, opacity 0.36s ease;
-    will-change: transform, opacity;
-  }
-
-  .reveal-on-scroll.revealed {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  @media (max-width: 980px) {
-    .layout { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 760px) {
-    .container { padding: 16px 14px 28px; }
-    .header-inner { padding: 14px; }
-    .logo-text { font-size: 21px; }
-    .tabs { width: 100%; justify-content: center; }
-    .tab { flex: 1; padding: 10px 8px; font-size: 11px; }
-    .form-row { grid-template-columns: 1fr; }
-    .match-top { flex-direction: column; }
-    .score-ring { align-self: flex-start; }
-    .results-header { flex-direction: column; align-items: flex-start; }
-    .report-item { flex-wrap: wrap; }
-    .report-loc { width: 100%; }
+  /* Disable transitions for hover states that need instant feedback */
+  .tab, .mode-btn, .filter-chip, button:not(.tab):not(.mode-btn):not(.filter-chip) {
+    @apply transition-all duration-200;
   }
 </style>
 </head>
-<body>
+<body class="min-h-screen font-body text-slate-900 dark:text-slate-100 dark:bg-slate-950">
 
-<div class="container">
-  <header>
-    <div class="header-inner">
-      <div class="logo">
-        <div class="logo-icon">L+F</div>
-        <div>
-          <div class="logo-text">Lost<span>&</span>Found</div>
-          <div class="subtitle">El Sewedy University Match Desk</div>
+<!-- Floating background orbs (CSS-based, no need for divs) -->
+
+<div class="relative z-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <!-- Header -->
+    <header class="mb-7 rounded-3xl border border-white/40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-sm dark:border-slate-700/60 p-5 sm:p-6">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-cyan-600 dark:from-brand-dark dark:to-cyan-500 text-white font-head text-xl font-black flex items-center justify-center shadow-lg">
+            L+F
+          </div>
+          <div>
+            <div class="font-head text-3xl font-black tracking-tight">
+              Lost<span class="text-brand-500 dark:text-brand-dark">&</span>Found
+            </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest font-semibold">
+              El Sewedy University Match Desk
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats & Theme Toggle -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <!-- Stats -->
+          <div class="stat-pill rounded-full px-4 py-2 text-sm bg-white/70 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 shadow-sm">
+            Lost Reports <strong class="ml-1" id="stat-lost">15</strong>
+          </div>
+          <div class="stat-pill rounded-full px-4 py-2 text-sm bg-white/70 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 shadow-sm">
+            Found Reports <strong class="ml-1" id="stat-found">20</strong>
+          </div>
+
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" class="ml-2 p-2.5 rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition-all duration-200" title="Toggle dark/light mode">
+            <span id="theme-icon" class="text-xl">☀️</span>
+          </button>
         </div>
       </div>
-      <div class="stats-bar">
-        <div class="stat-pill">Lost Reports <strong id="stat-lost">15</strong></div>
-        <div class="stat-pill">Found Reports <strong id="stat-found">20</strong></div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <div class="flex gap-2 mb-7 inline-flex bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-2 shadow-sm">
+      <button class="tab active px-5 py-2.5 font-head text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50" onclick="switchTab('match')">Find Match</button>
+      <button class="tab px-5 py-2.5 font-head text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50" onclick="switchTab('submit')">Submit Report</button>
+      <button class="tab px-5 py-2.5 font-head text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 rounded-xl transition-all duration-200 cursor-pointer hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700/50" onclick="switchTab('browse')">Browse Records</button>
+    </div>
+
+    <!-- Tab Content: Find Match -->
+    <div id="tab-match" class="grid grid-cols-1 lg:grid-cols-5 gap-6 slide-fade tab-panel is-active">
+      <!-- Left Panel: Search Form -->
+      <div class="lg:col-span-2">
+        <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-sm dark:shadow-none overflow-hidden animation-rise-in">
+          <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-200 dark:border-slate-700 font-head text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Search For Your Item
+          </div>
+          <div class="p-5 sm:p-6">
+            <!-- Mode Toggle -->
+            <div class="flex border border-slate-300 dark:border-slate-600 rounded-2xl overflow-hidden mb-5 bg-amber-50/50 dark:bg-slate-700/30">
+              <button class="mode-btn flex-1 py-3 px-3 text-xs font-head font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 bg-transparent transition-all duration-200 cursor-pointer active:bg-accent-red active:text-white dark:active:bg-accent-red" id="mode-lost" onclick="setMode('lost')">I Lost Something</button>
+              <button class="mode-btn flex-1 py-3 px-3 text-xs font-head font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 bg-transparent transition-all duration-200 cursor-pointer active:bg-brand-500 active:text-white dark:active:bg-brand-dark" id="mode-found" onclick="setMode('found')">I Found Something</button>
+            </div>
+
+            <!-- Status Chip -->
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-brand-500/30 dark:border-brand-dark/30 bg-brand-50/20 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 text-xs font-bold uppercase tracking-wider mb-5">
+              <span class="w-2 h-2 rounded-full bg-brand-500 dark:bg-brand-dark animate-pulse"></span>
+              Smart Matching Engine
+            </div>
+
+            <!-- Form Fields -->
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Describe The Item</label>
+                <textarea id="m-desc" placeholder="Example: black Sony wireless headphones with noise cancelling, left in library." class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none min-h-24"></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Category</label>
+                  <select id="m-cat" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
+                    <option value="">Auto Detect</option>
+                    <option>ID Card</option>
+                    <option>Charger</option>
+                    <option>Bottle</option>
+                    <option>Notebook</option>
+                    <option>Headphones</option>
+                    <option>Keys</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Color</label>
+                  <input id="m-color" type="text" placeholder="Example: black" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Location</label>
+                  <select id="m-loc" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
+                    <option value="">Any Location</option>
+                    <option>Library</option>
+                    <option>Cafeteria</option>
+                    <option>Building A</option>
+                    <option>Building B</option>
+                    <option>Sports Hall</option>
+                    <option>Parking Lot</option>
+                    <option>Main Gate</option>
+                    <option>Lab 3</option>
+                    <option>Lecture Hall 1</option>
+                    <option>Lecture Hall 2</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Date</label>
+                  <input id="m-date" type="date" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
+                </div>
+              </div>
+
+              <button class="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-600 dark:from-brand-dark dark:to-cyan-500 text-white font-head font-bold uppercase tracking-wider hover:shadow-lg dark:hover:shadow-brand-900/50 transition-all duration-200 cursor-pointer hover:-translate-y-0.5" onclick="runMatch()">Find Matches</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Prediction Panel -->
+        <div id="cat-prediction" class="hidden mt-3 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-sm p-5 animation-rise-in">
+          <div class="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-3">Auto Category Detection</div>
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <span id="pred-label" class="font-head font-bold text-lg text-slate-900 dark:text-white"></span>
+            <span id="pred-conf" class="text-sm text-brand-600 dark:text-brand-400 font-bold"></span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-accent-gold to-brand-500 dark:from-amber-400 dark:to-brand-400 transition-all duration-500" id="pred-bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Results -->
+      <div id="results-panel" class="lg:col-span-3 slide-fade">
+        <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm min-h-72 flex flex-col items-center justify-center text-center px-6 py-12">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500/20 dark:from-brand-500/10 to-accent-red/20 dark:to-accent-red/10 border border-brand-500/30 dark:border-slate-700 flex items-center justify-center font-head text-sm font-bold uppercase text-slate-600 dark:text-slate-400 mb-4">
+            Idle
+          </div>
+          <div class="font-head font-bold text-2xl text-slate-900 dark:text-white mb-3">Ready To Search</div>
+          <div class="text-slate-600 dark:text-slate-400 max-w-sm">Describe your item and run a search. Results are ranked by match confidence.</div>
+        </div>
       </div>
     </div>
-  </header>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('match')">Find Match</button>
-    <button class="tab" onclick="switchTab('submit')">Submit Report</button>
-    <button class="tab" onclick="switchTab('browse')">Browse Records</button>
-  </div>
-
-  <div id="tab-match" class="layout slide-fade tab-panel is-active">
-    <div>
-      <div class="panel">
-        <div class="panel-header">Search For Your Item</div>
-        <div class="panel-body">
-          <div class="mode-toggle" style="margin-bottom:20px;">
-            <button class="mode-btn active" id="mode-lost" onclick="setMode('lost')">I Lost Something</button>
-            <button class="mode-btn found-mode" id="mode-found" onclick="setMode('found')">I Found Something</button>
+    <!-- Tab Content: Submit Report -->
+    <div id="tab-submit" class="hidden max-w-2xl slide-fade tab-panel">
+      <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-sm dark:shadow-none overflow-hidden">
+        <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-slate-200 dark:border-slate-700 font-head text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Submit A Report
+        </div>
+        <div class="p-5 sm:p-6 space-y-4">
+          <!-- Mode Toggle -->
+          <div class="flex border border-slate-300 dark:border-slate-600 rounded-2xl overflow-hidden bg-amber-50/50 dark:bg-slate-700/30">
+            <button class="mode-btn flex-1 py-3 px-3 text-xs font-head font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 bg-transparent transition-all duration-200 cursor-pointer active:bg-accent-red active:text-white dark:active:bg-accent-red" id="smode-lost" onclick="setSMode('lost')">I Lost Something</button>
+            <button class="mode-btn flex-1 py-3 px-3 text-xs font-head font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 bg-transparent transition-all duration-200 cursor-pointer active:bg-brand-500 active:text-white dark:active:bg-brand-dark" id="smode-found" onclick="setSMode('found')">I Found Something</button>
           </div>
 
-          <div class="status-chip"><span class="status-dot"></span>Smart Matching Engine</div>
-
-          <div class="form-group">
-            <label>Describe The Item</label>
-            <textarea id="m-desc" placeholder="Example: black Sony wireless headphones with noise cancelling, left in library."></textarea>
+          <!-- Form Fields -->
+          <div>
+            <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Item Description *</label>
+            <textarea id="s-desc" placeholder="Add details like brand, color, marks, and where it was seen." class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none min-h-24"></textarea>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Category</label>
-              <select id="m-cat">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Category</label>
+              <select id="s-cat" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
                 <option value="">Auto Detect</option>
                 <option>ID Card</option>
                 <option>Charger</option>
@@ -878,17 +306,17 @@
                 <option>Keys</option>
               </select>
             </div>
-            <div class="form-group">
-              <label>Color</label>
-              <input id="m-color" type="text" placeholder="Example: black, white">
+            <div>
+              <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Color</label>
+              <input id="s-color" type="text" placeholder="Example: blue, black" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Location</label>
-              <select id="m-loc">
-                <option value="">Any Location</option>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Location</label>
+              <select id="s-loc" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
+                <option value="">Select Location</option>
                 <option>Library</option>
                 <option>Cafeteria</option>
                 <option>Building A</option>
@@ -901,388 +329,436 @@
                 <option>Lecture Hall 2</option>
               </select>
             </div>
-            <div class="form-group">
-              <label>Date</label>
-              <input id="m-date" type="date">
+            <div>
+              <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Date</label>
+              <input id="s-date" type="date" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
             </div>
           </div>
 
-          <button class="btn-primary" onclick="runMatch()">Find Matches</button>
-        </div>
-      </div>
-
-      <div id="cat-prediction" style="display:none; margin-top:12px;" class="panel">
-        <div class="panel-body" style="padding:14px 16px;">
-          <div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;">Auto Category Detection</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
-            <span id="pred-label" style="font-weight:700;font-size:15px;"></span>
-            <span id="pred-conf" style="font-size:12px;color:var(--brand);font-weight:600;"></span>
+          <div id="contact-field">
+            <label class="block text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Your Email / Contact *</label>
+            <input id="s-contact" type="text" placeholder="Example: name@sewedy.edu.eg" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-amber-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 dark:focus:border-brand-dark focus:ring-4 focus:ring-brand-100 dark:focus:ring-brand-900/30 transition-all duration-200 outline-none">
           </div>
-          <div class="confidence-bar"><div class="confidence-fill" id="pred-bar" style="width:0%"></div></div>
+
+          <button class="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-600 dark:from-brand-dark dark:to-cyan-500 text-white font-head font-bold uppercase tracking-wider hover:shadow-lg dark:hover:shadow-brand-900/50 transition-all duration-200 cursor-pointer hover:-translate-y-0.5" onclick="submitReport()">Submit Report</button>
         </div>
       </div>
     </div>
 
-    <div id="results-panel" class="slide-fade">
-      <div class="empty-state">
-        <div class="empty-icon">Idle</div>
-        <div class="empty-title">Ready To Search</div>
-        <div class="empty-sub">Describe your item and run a search. Results are ranked by match confidence.</div>
+    <!-- Tab Content: Browse Records -->
+    <div id="tab-browse" class="hidden slide-fade tab-panel">
+      <!-- Section Tabs -->
+      <div class="flex gap-2 mb-6 flex-wrap">
+        <button class="section-tab px-4 py-2.5 rounded-full text-sm font-head font-bold uppercase tracking-wider border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 active:bg-brand-500 active:text-white active:border-brand-500 dark:active:bg-brand-dark dark:active:border-brand-dark" onclick="setBrowseMode('lost')">Lost Items (<span id="b-lost-count">15</span>)</button>
+        <button class="section-tab px-4 py-2.5 rounded-full text-sm font-head font-bold uppercase tracking-wider border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 active:bg-brand-500 active:text-white active:border-brand-500 dark:active:bg-brand-dark dark:active:border-brand-dark" onclick="setBrowseMode('found')">Found Items (<span id="b-found-count">20</span>)</button>
       </div>
-    </div>
-  </div>
 
-  <div id="tab-submit" style="display:none; max-width:560px;" class="slide-fade tab-panel">
-    <div class="panel">
-      <div class="panel-header">Submit A Report</div>
-      <div class="panel-body">
-        <div class="mode-toggle" style="margin-bottom:20px;">
-          <button class="mode-btn active" id="smode-lost" onclick="setSMode('lost')">I Lost Something</button>
-          <button class="mode-btn found-mode" id="smode-found" onclick="setSMode('found')">I Found Something</button>
-        </div>
-
-        <div class="form-group">
-          <label>Item Description *</label>
-          <textarea id="s-desc" placeholder="Add details like brand, color, marks, and where it was seen."></textarea>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Category</label>
-            <select id="s-cat">
-              <option value="">Auto Detect</option>
-              <option>ID Card</option>
-              <option>Charger</option>
-              <option>Bottle</option>
-              <option>Notebook</option>
-              <option>Headphones</option>
-              <option>Keys</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Color</label>
-            <input id="s-color" type="text" placeholder="Example: blue, black">
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Location</label>
-            <select id="s-loc">
-              <option value="">Select Location</option>
-              <option>Library</option>
-              <option>Cafeteria</option>
-              <option>Building A</option>
-              <option>Building B</option>
-              <option>Sports Hall</option>
-              <option>Parking Lot</option>
-              <option>Main Gate</option>
-              <option>Lab 3</option>
-              <option>Lecture Hall 1</option>
-              <option>Lecture Hall 2</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input id="s-date" type="date">
-          </div>
-        </div>
-
-        <div class="form-group" id="contact-field">
-          <label>Your Email / Contact *</label>
-          <input id="s-contact" type="text" placeholder="Example: name@sewedy.edu.eg">
-        </div>
-
-        <button class="btn-primary" onclick="submitReport()">Submit Report</button>
+      <!-- Category Filters -->
+      <div class="filter-bar flex flex-wrap gap-2 mb-6">
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('')">All</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('ID Card')">ID Card</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('Charger')">Charger</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('Bottle')">Bottle</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('Notebook')">Notebook</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('Headphones')">Headphones</button>
+        <button class="filter-chip px-4 py-2 rounded-full text-sm border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:border-brand-500 dark:hover:border-brand-dark hover:text-slate-900 dark:hover:text-white active:bg-slate-900 active:text-white active:border-slate-900 dark:active:bg-slate-100 dark:active:text-slate-900" onclick="setFilter('Keys')">Keys</button>
       </div>
-    </div>
-  </div>
 
-  <div id="tab-browse" style="display:none;" class="slide-fade tab-panel">
-    <div class="section-tabs">
-      <button class="section-tab active" onclick="setBrowseMode('lost')">Lost Items (<span id="b-lost-count">15</span>)</button>
-      <button class="section-tab" onclick="setBrowseMode('found')">Found Items (<span id="b-found-count">20</span>)</button>
+      <!-- Reports List -->
+      <div class="reports-grid flex flex-col gap-2" id="reports-list"></div>
     </div>
-    <div class="filter-bar" id="cat-filters">
-      <button class="filter-chip active" onclick="setFilter('')">All</button>
-      <button class="filter-chip" onclick="setFilter('ID Card')">ID Card</button>
-      <button class="filter-chip" onclick="setFilter('Charger')">Charger</button>
-      <button class="filter-chip" onclick="setFilter('Bottle')">Bottle</button>
-      <button class="filter-chip" onclick="setFilter('Notebook')">Notebook</button>
-      <button class="filter-chip" onclick="setFilter('Headphones')">Headphones</button>
-      <button class="filter-chip" onclick="setFilter('Keys')">Keys</button>
-    </div>
-    <div class="reports-grid" id="reports-list"></div>
   </div>
 </div>
 
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">OK</span>
-  <span id="toast-msg"></span>
+<!-- Toast Notification -->
+<div class="toast fixed right-5 bottom-5 z-50 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 shadow-lg p-4 flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none" id="toast">
+  <span class="toast-icon text-xs font-bold rounded-lg px-2 py-1 uppercase bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">OK</span>
+  <span id="toast-msg" class="text-sm text-slate-900 dark:text-slate-100"></span>
 </div>
 
 <script>
-const API = 'http://localhost:5050/api';
-let currentMode = 'lost';
-let currentSMode = 'lost';
-let browseMode = 'lost';
-let filterCat = '';
-let allReports = { lost: [], found: [] };
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // THEME MANAGEMENT
+  // ═══════════════════════════════════════════════════════════════════════════════
 
-const ICONS = {
-  'ID Card':'ID',
-  'Charger':'CH',
-  'Bottle':'BT',
-  'Notebook':'NB',
-  'Headphones':'HP',
-  'Keys':'KY'
-};
+  function initTheme() {
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark';
 
-// Init
-
-document.getElementById('m-date').value = '2024-01-17';
-document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
-
-fetch(`${API}/stats`).then(r=>r.json()).then(d=>{
-  document.getElementById('stat-lost').textContent = d.total_lost;
-  document.getElementById('stat-found').textContent = d.total_found;
-  document.getElementById('b-lost-count').textContent = d.total_lost;
-  document.getElementById('b-found-count').textContent = d.total_found;
-}).catch(()=>{});
-
-fetch(`${API}/reports`).then(r=>r.json()).then(d=>{
-  allReports = d;
-  renderReports();
-}).catch(()=>{});
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('revealed');
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, {
-  threshold: 0.14
-});
-
-function bindRevealAnimations(scope=document) {
-  scope.querySelectorAll('.reveal-on-scroll').forEach((el, index) => {
-    el.style.transitionDelay = `${Math.min(index * 45, 220)}ms`;
-    revealObserver.observe(el);
-  });
-}
-
-function activateTabPanel(panel, displayMode) {
-  panel.style.display = displayMode;
-  requestAnimationFrame(() => panel.classList.add('is-active'));
-}
-
-// Tabs
-function switchTab(tab) {
-  ['match','submit','browse'].forEach(t=>{
-    const panel = document.getElementById(`tab-${t}`);
-    panel.classList.remove('is-active');
-    if (t === tab) {
-      activateTabPanel(panel, t==='match' ? 'grid' : 'block');
+    if (isDark) {
+      html.classList.add('dark');
+      document.getElementById('theme-icon').textContent = '🌙';
     } else {
-      panel.style.display = 'none';
+      html.classList.remove('dark');
+      document.getElementById('theme-icon').textContent = '☀️';
     }
+  }
+
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark');
+    document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['match','submit','browse'][i]===tab));
-  if (tab==='browse') renderReports();
-}
 
-// Mode
-function setMode(m) {
-  currentMode = m;
-  document.getElementById('mode-lost').classList.toggle('active', m==='lost');
-  document.getElementById('mode-found').classList.toggle('active', m==='found');
-}
+  // Initialize theme on page load
+  initTheme();
 
-function setSMode(m) {
-  currentSMode = m;
-  document.getElementById('smode-lost').classList.toggle('active', m==='lost');
-  document.getElementById('smode-found').classList.toggle('active', m==='found');
-  document.getElementById('contact-field').style.display = m==='lost' ? 'block' : 'none';
-}
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // API & STATE
+  // ═══════════════════════════════════════════════════════════════════════════════
 
-// Browse
-function setBrowseMode(m) {
-  browseMode = m;
-  document.querySelectorAll('.section-tab').forEach((t,i)=>t.classList.toggle('active',['lost','found'][i]===m));
-  renderReports();
-}
+  const API = `${window.location.origin}/api`;
+  let currentMode = 'lost';
+  let currentSMode = 'lost';
+  let browseMode = 'lost';
+  let filterCat = '';
+  let allReports = { lost: [], found: [] };
 
-function setFilter(cat) {
-  filterCat = cat;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active', c.textContent.includes(cat||'All') && (!cat || c.textContent.includes(cat))));
-  renderReports();
-}
-
-function renderReports() {
-  const pool = allReports[browseMode] || [];
-  const filtered = filterCat ? pool.filter(r=>r.category===filterCat) : pool;
-  const container = document.getElementById('reports-list');
-
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">None</div><div class="empty-title">No Reports</div><div class="empty-sub">No items match this filter yet.</div></div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(r=>`
-    <div class="report-item reveal-on-scroll">
-      <div class="report-badge badge-${browseMode}">${ICONS[r.category] || 'IT'}</div>
-      <div class="report-info">
-        <div class="report-name">${r.description}</div>
-        <div class="report-meta">${r.category} · ${r.color || '?'} · ${r.date}</div>
-      </div>
-      <div class="report-loc">Location: ${r.location}</div>
-    </div>
-  `).join('');
-
-  bindRevealAnimations(container);
-}
-
-// Match
-async function runMatch() {
-  const desc = document.getElementById('m-desc').value.trim();
-  if (!desc) { showToast('Please describe the item', 'WARN'); return; }
-
-  const panel = document.getElementById('results-panel');
-  panel.innerHTML = '<div class="loading"><div class="spinner"></div>Finding likely matches...</div>';
-
-  const body = {
-    description: desc,
-    category: document.getElementById('m-cat').value,
-    color: document.getElementById('m-color').value,
-    location: document.getElementById('m-loc').value,
-    date: document.getElementById('m-date').value || '2024-01-17',
-    mode: currentMode
+  const ICONS = {
+    'ID Card': 'ID',
+    'Charger': 'CH',
+    'Bottle': 'BT',
+    'Notebook': 'NB',
+    'Headphones': 'HP',
+    'Keys': 'KY'
   };
 
-  try {
-    const res = await fetch(`${API}/match`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(body)
+  // Initialize dates
+  document.getElementById('m-date').value = '2024-01-17';
+  document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
+
+  // Load initial data
+  fetch(`${API}/stats`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('stat-lost').textContent = d.total_lost;
+      document.getElementById('stat-found').textContent = d.total_found;
+      document.getElementById('b-lost-count').textContent = d.total_lost;
+      document.getElementById('b-found-count').textContent = d.total_found;
+    })
+    .catch(() => {});
+
+  fetch(`${API}/reports`)
+    .then(r => r.json())
+    .then(d => {
+      allReports = d;
+      renderReports();
+    })
+    .catch(() => {});
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // SCROLL REVEAL ANIMATIONS
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
+      }
     });
+  }, { threshold: 0.14 });
 
-    const data = await res.json();
-
-    const predBox = document.getElementById('cat-prediction');
-    predBox.style.display = 'block';
-    document.getElementById('pred-label').textContent = `${data.predicted_category}`;
-    document.getElementById('pred-conf').textContent = `${Math.round(data.category_confidence*100)}% confidence`;
-    document.getElementById('pred-bar').style.width = `${Math.round(data.category_confidence*100)}%`;
-
-    renderMatches(data.matches, currentMode);
-  } catch(e) {
-    panel.innerHTML = '<div class="empty-state"><div class="empty-icon">Error</div><div class="empty-title">Server Unreachable</div><div class="empty-sub">Could not connect to backend service.</div></div>';
-  }
-}
-
-function renderMatches(matches, mode) {
-  const panel = document.getElementById('results-panel');
-  if (!matches.length) {
-    panel.innerHTML = '<div class="empty-state"><div class="empty-icon">None</div><div class="empty-title">No Matches Found</div><div class="empty-sub">Try broadening your description or changing filters.</div></div>';
-    return;
+  function bindRevealAnimations(scope = document) {
+    scope.querySelectorAll('.reveal-on-scroll').forEach((el, index) => {
+      el.style.transitionDelay = `${Math.min(index * 45, 220)}ms`;
+      revealObserver.observe(el);
+    });
   }
 
-  const label = mode==='lost' ? 'Found Report' : 'Lost Report';
-  panel.innerHTML = `
-    <div>
-      <div class="results-header">
-        <div class="results-title">Top Matches</div>
-        <div class="results-count">${matches.length} results sorted by confidence</div>
-      </div>
-      ${matches.map((m,i)=>{
-        const pct = Math.round(m.score * 100);
-        const color = pct>=60 ? '#2f9e44' : pct>=35 ? '#b8870b' : '#c24132';
-        return `
-        <div class="match-card reveal-on-scroll ${i===0&&pct>40?'top-match':''}" style="animation-delay:${i*65}ms" onclick="toggleMatchReasons(this)">
-          <div class="match-top">
-            <div>
-              <div class="match-id">${label} · ${m.id}</div>
-              <div class="match-cat-badge"><span class="cat-code">${ICONS[m.category] || 'IT'}</span>${m.category}</div>
-              <div class="match-desc">${m.description}</div>
-            </div>
-            <div class="score-ring" style="background:${color}21;border:2px solid ${color};color:${color};">${pct}%</div>
-          </div>
-          <div class="match-meta">
-            <span class="meta-tag">Location: ${m.location}</span>
-            <span class="meta-tag">Color: ${m.color || '?'}</span>
-            <span class="meta-tag">Date: ${m.date}</span>
-            ${m.finder ? `<span class="meta-tag">Finder: ${m.finder.replace('_',' ')}</span>` : ''}
-            ${m.contact ? `<span class="meta-tag">Contact: ${m.contact}</span>` : ''}
-          </div>
-          <div class="reasons-list ${i===0?'is-open':''}">
-            <h4>Why Matched</h4>
-            ${m.reasons.map(r=>`<span class="reason-tag">+ ${r}</span>`).join('')}
-          </div>
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // TAB MANAGEMENT
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  function switchTab(tab) {
+    ['match', 'submit', 'browse'].forEach(t => {
+      const panel = document.getElementById(`tab-${t}`);
+      const isActive = t === tab;
+      panel.classList.toggle('hidden', !isActive);
+      panel.classList.toggle('is-active', isActive);
+      if (isActive) {
+        panel.style.display = t === 'match' ? 'grid' : 'block';
+      }
+    });
+    document.querySelectorAll('.tab').forEach((b, i) => {
+      b.classList.toggle('!bg-slate-900 dark:!bg-slate-100 !text-white dark:!text-slate-900 !shadow-md', ['match', 'submit', 'browse'][i] === tab);
+    });
+    if (tab === 'browse') renderReports();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // MODE MANAGEMENT
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  function setMode(m) {
+    currentMode = m;
+    document.getElementById('mode-lost').classList.toggle('!bg-accent-red !text-white', m === 'lost');
+    document.getElementById('mode-found').classList.toggle('!bg-brand-500 dark:!bg-brand-dark !text-white', m === 'found');
+  }
+
+  function setSMode(m) {
+    currentSMode = m;
+    document.getElementById('smode-lost').classList.toggle('!bg-accent-red !text-white', m === 'lost');
+    document.getElementById('smode-found').classList.toggle('!bg-brand-500 dark:!bg-brand-dark !text-white', m === 'found');
+    document.getElementById('contact-field').style.display = m === 'lost' ? 'block' : 'none';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // BROWSE MODE
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  function setBrowseMode(m) {
+    browseMode = m;
+    document.querySelectorAll('.section-tab').forEach((t, i) => {
+      t.classList.toggle('!bg-brand-500 dark:!bg-brand-dark !text-white !border-brand-500 dark:!border-brand-dark', ['lost', 'found'][i] === m);
+    });
+    renderReports();
+  }
+
+  function setFilter(cat) {
+    filterCat = cat;
+    document.querySelectorAll('.filter-chip').forEach(c => {
+      const isActive = (c.textContent.includes(cat || 'All') && (!cat || c.textContent.includes(cat)));
+      c.classList.toggle('!bg-slate-900 dark:!bg-slate-100 !text-white dark:!text-slate-900 !border-slate-900 dark:!border-slate-100', isActive);
+    });
+    renderReports();
+  }
+
+  function renderReports() {
+    const pool = allReports[browseMode] || [];
+    const filtered = filterCat ? pool.filter(r => r.category === filterCat) : pool;
+    const container = document.getElementById('reports-list');
+
+    if (!filtered.length) {
+      container.innerHTML = `
+        <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/50 dark:bg-slate-800/50 min-h-72 flex flex-col items-center justify-center text-center px-6 py-12">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-slate-200 dark:from-slate-700 to-slate-200 dark:to-slate-700 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-head text-sm font-bold uppercase text-slate-600 dark:text-slate-400 mb-4">None</div>
+          <div class="font-head font-bold text-2xl text-slate-900 dark:text-white mb-3">No Reports</div>
+          <div class="text-slate-600 dark:text-slate-400 max-w-sm">No items match this filter yet.</div>
         </div>
-      `}).join('')}
-    </div>`;
+      `;
+      return;
+    }
 
-  bindRevealAnimations(panel);
-}
+    container.innerHTML = filtered.map(r => `
+      <div class="reveal-on-scroll border border-slate-300 dark:border-slate-600 rounded-2xl bg-white/70 dark:bg-slate-800/70 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-3 sm:p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center font-head text-xs font-bold ${browseMode === 'lost' ? 'bg-accent-red/20 dark:bg-accent-red/10 border border-accent-red/30 dark:border-accent-red/20 text-accent-red dark:text-accent-red' : 'bg-brand-500/20 dark:bg-brand-500/10 border border-brand-500/30 dark:border-brand-500/20 text-brand-600 dark:text-brand-400'} flex-shrink-0">
+          ${ICONS[r.category] || 'IT'}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-semibold text-slate-900 dark:text-white truncate">${r.description}</div>
+          <div class="text-xs text-slate-600 dark:text-slate-400 mt-1">${r.category} · ${r.color || '?'} · ${r.date}</div>
+        </div>
+        <div class="text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap">Location: ${r.location}</div>
+      </div>
+    `).join('');
 
-function toggleMatchReasons(card) {
-  const reasons = card.querySelector('.reasons-list');
-  if (!reasons) return;
-  reasons.classList.toggle('is-open');
-}
+    bindRevealAnimations(container);
+  }
 
-// Submit
-async function submitReport() {
-  const desc = document.getElementById('s-desc').value.trim();
-  if (!desc) { showToast('Please describe the item', 'WARN'); return; }
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // MATCHING ENGINE
+  // ═════════════════════════════════════════════════════════════════════════════════
 
-  const body = {
-    type: currentSMode,
-    description: desc,
-    category: document.getElementById('s-cat').value,
-    color: document.getElementById('s-color').value,
-    location: document.getElementById('s-loc').value,
-    date: document.getElementById('s-date').value,
-    contact: document.getElementById('s-contact').value,
-  };
+  async function runMatch() {
+    const desc = document.getElementById('m-desc').value.trim();
+    if (!desc) {
+      showToast('Please describe the item', 'WARN');
+      return;
+    }
 
-  try {
-    const res = await fetch(`${API}/submit`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(body)
-    });
+    const panel = document.getElementById('results-panel');
+    panel.innerHTML = `
+      <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 min-h-72 flex items-center justify-center gap-3 text-slate-600 dark:text-slate-400">
+        <div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 border-t-brand-500 dark:border-t-brand-400 animate-spin"></div>
+        <span class="text-sm">Finding likely matches...</span>
+      </div>
+    `;
 
-    const data = await res.json();
-    if (data.success) {
-      showToast(`Report ${data.report.id} submitted. Auto-detected category: ${data.predicted_category} (${Math.round(data.confidence*100)}%)`, 'OK');
-      document.getElementById('s-desc').value = '';
-      document.getElementById('s-color').value = '';
+    const body = {
+      description: desc,
+      category: document.getElementById('m-cat').value,
+      color: document.getElementById('m-color').value,
+      location: document.getElementById('m-loc').value,
+      date: document.getElementById('m-date').value || '2024-01-17',
+      mode: currentMode
+    };
 
-      fetch(`${API}/stats`).then(r=>r.json()).then(d=>{
-        document.getElementById('stat-lost').textContent = d.total_lost;
-        document.getElementById('stat-found').textContent = d.total_found;
-        document.getElementById('b-lost-count').textContent = d.total_lost;
-        document.getElementById('b-found-count').textContent = d.total_found;
+    try {
+      const res = await fetch(`${API}/match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
       });
 
-      fetch(`${API}/reports`).then(r=>r.json()).then(d=>{ allReports = d; });
-    }
-  } catch(e) {
-    showToast('Could not submit report. Server offline.', 'WARN');
-  }
-}
+      const data = await res.json();
 
-// Toast
-function showToast(msg, icon='OK') {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  document.getElementById('toast-icon').textContent = icon;
-  t.className = 'toast show' + (icon==='OK' ? ' success' : '');
-  setTimeout(()=>{ t.className='toast'; }, 4000);
-}
+      const predBox = document.getElementById('cat-prediction');
+      predBox.classList.remove('hidden');
+      document.getElementById('pred-label').textContent = `${data.predicted_category}`;
+      document.getElementById('pred-conf').textContent = `${Math.round(data.category_confidence * 100)}% confidence`;
+      document.getElementById('pred-bar').style.width = `${Math.round(data.category_confidence * 100)}%`;
+
+      renderMatches(data.matches, currentMode);
+    } catch (e) {
+      panel.innerHTML = `
+        <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/50 dark:bg-slate-800/50 min-h-72 flex flex-col items-center justify-center text-center px-6 py-12">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-200 dark:from-red-900/30 to-red-200 dark:to-red-900/30 border border-red-300 dark:border-red-700 flex items-center justify-center font-head text-sm font-bold uppercase text-red-600 dark:text-red-400 mb-4">Error</div>
+          <div class="font-head font-bold text-2xl text-slate-900 dark:text-white mb-3">Server Unreachable</div>
+          <div class="text-slate-600 dark:text-slate-400 max-w-sm">Could not connect to backend service.</div>
+        </div>
+      `;
+    }
+  }
+
+  function renderMatches(matches, mode) {
+    const panel = document.getElementById('results-panel');
+    if (!matches.length) {
+      panel.innerHTML = `
+        <div class="rounded-3xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/50 dark:bg-slate-800/50 min-h-72 flex flex-col items-center justify-center text-center px-6 py-12">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 dark:from-amber-900/30 to-amber-200 dark:to-amber-900/30 border border-amber-300 dark:border-amber-700 flex items-center justify-center font-head text-sm font-bold uppercase text-amber-600 dark:text-amber-400 mb-4">None</div>
+          <div class="font-head font-bold text-2xl text-slate-900 dark:text-white mb-3">No Matches Found</div>
+          <div class="text-slate-600 dark:text-slate-400 max-w-sm">Try broadening your description or changing filters.</div>
+        </div>
+      `;
+      return;
+    }
+
+    const label = mode === 'lost' ? 'Found Report' : 'Lost Report';
+    panel.innerHTML = `
+      <div class="space-y-4">
+        <div class="flex items-end justify-between gap-3 mb-2">
+          <div class="font-head font-bold text-3xl text-slate-900 dark:text-white">Top Matches</div>
+          <div class="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider">${matches.length} results sorted by confidence</div>
+        </div>
+        ${matches.map((m, i) => {
+          const pct = Math.round(m.score * 100);
+          const color = pct >= 60 ? '#2f9e44' : pct >= 35 ? '#b8870b' : '#c24132';
+          return `
+          <div class="reveal-on-scroll border border-slate-300 dark:border-slate-600 rounded-2xl bg-white/70 dark:bg-slate-800/70 shadow-sm hover:shadow-md transition-all duration-200 p-4 sm:p-5 cursor-pointer ${i === 0 && pct > 40 ? 'ring-2 ring-brand-500 dark:ring-brand-400' : ''}" style="animation-delay:${i * 65}ms" onclick="toggleMatchReasons(this)">
+            <div class="flex justify-between gap-4 items-start mb-3">
+              <div class="flex-1">
+                <div class="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">${label} · ${m.id}</div>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-xs font-bold mb-3">
+                  <span class="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 flex items-center justify-center text-xs font-bold">${ICONS[m.category] || 'IT'}</span>
+                  ${m.category}
+                </div>
+                <div class="text-sm text-slate-900 dark:text-white leading-relaxed">${m.description}</div>
+              </div>
+              <div class="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center font-head font-bold text-lg" style="background-color:${color}21;border: 2px solid ${color};color:${color};">${pct}%</div>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300">Location: ${m.location}</span>
+              <span class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300">Color: ${m.color || '?'}</span>
+              <span class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300">Date: ${m.date}</span>
+              ${m.finder ? `<span class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300">Finder: ${m.finder.replace(/_/g, ' ')}</span>` : ''}
+              ${m.contact ? `<span class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300">Contact: ${m.contact}</span>` : ''}
+            </div>
+            <div class="reasons-list max-h-0 opacity-0 overflow-hidden transition-all duration-300 mt-3 pt-3 border-t border-slate-300 dark:border-slate-600 ${i === 0 ? 'is-open max-h-96 opacity-100' : ''}">
+              <h4 class="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Why Matched</h4>
+              <div class="flex flex-wrap gap-2">
+                ${m.reasons.map(r => `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-green-300/50 dark:border-green-700/50 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 text-xs font-semibold">+ ${r}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `}).join('')}
+      </div>
+    `;
+
+    bindRevealAnimations(panel);
+  }
+
+  function toggleMatchReasons(card) {
+    const reasons = card.querySelector('.reasons-list');
+    if (!reasons) return;
+    reasons.classList.toggle('is-open');
+    reasons.classList.toggle('max-h-96');
+    reasons.classList.toggle('opacity-100');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // SUBMIT REPORT
+  // ═════════════════════════════════════════════════════════════════════════════════
+
+  async function submitReport() {
+    const desc = document.getElementById('s-desc').value.trim();
+    if (!desc) {
+      showToast('Please describe the item', 'WARN');
+      return;
+    }
+
+    const body = {
+      type: currentSMode,
+      description: desc,
+      category: document.getElementById('s-cat').value,
+      color: document.getElementById('s-color').value,
+      location: document.getElementById('s-loc').value,
+      date: document.getElementById('s-date').value,
+      contact: document.getElementById('s-contact').value,
+    };
+
+    try {
+      const res = await fetch(`${API}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Report ${data.report.id} submitted. Auto-detected category: ${data.predicted_category} (${Math.round(data.confidence * 100)}%)`, 'OK');
+        document.getElementById('s-desc').value = '';
+        document.getElementById('s-color').value = '';
+
+        fetch(`${API}/stats`)
+          .then(r => r.json())
+          .then(d => {
+            document.getElementById('stat-lost').textContent = d.total_lost;
+            document.getElementById('stat-found').textContent = d.total_found;
+            document.getElementById('b-lost-count').textContent = d.total_lost;
+            document.getElementById('b-found-count').textContent = d.total_found;
+          });
+
+        fetch(`${API}/reports`)
+          .then(r => r.json())
+          .then(d => { allReports = d; });
+      }
+    } catch (e) {
+      showToast('Could not submit report. Server offline.', 'WARN');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // TOAST NOTIFICATIONS
+  // ═════════════════════════════════════════════════════════════════════════════════
+
+  function showToast(msg, icon = 'OK') {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = icon;
+
+    if (icon === 'OK') {
+      t.classList.add('bg-green-50', 'dark:bg-green-950/30', 'border-green-200', 'dark:border-green-800');
+      t.classList.remove('bg-red-50', 'dark:bg-red-950/30', 'border-red-200', 'dark:border-red-800');
+      document.querySelector('.toast-icon').classList.add('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-400');
+      document.querySelector('.toast-icon').classList.remove('bg-red-100', 'dark:bg-red-900/30', 'text-red-700', 'dark:text-red-400');
+    } else {
+      t.classList.add('bg-red-50', 'dark:bg-red-950/30', 'border-red-200', 'dark:border-red-800');
+      t.classList.remove('bg-green-50', 'dark:bg-green-950/30', 'border-green-200', 'dark:border-green-800');
+      document.querySelector('.toast-icon').classList.add('bg-red-100', 'dark:bg-red-900/30', 'text-red-700', 'dark:text-red-400');
+      document.querySelector('.toast-icon').classList.remove('bg-green-100', 'dark:bg-green-900/30', 'text-green-700', 'dark:text-green-400');
+    }
+
+    t.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+    t.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+
+    setTimeout(() => {
+      t.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+      t.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+    }, 4000);
+  }
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
@@ -9,7 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 from datetime import datetime
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # ─── Load Data from CSV Files ─────────────────────────────────────────────────
@@ -202,5 +202,26 @@ def stats():
     })
 
 
+# ─── Frontend Routes ─────────────────────────────────────────────────────────
+
+@app.route('/')
+def serve_index():
+    """Serve the main index.html page"""
+    return send_from_directory('.', 'index.html')
+
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    """Serve static files (CSS, JS, etc)"""
+    return send_from_directory('.', filename)
+
+
+# ─── Application Entry Point ──────────────────────────────────────────────────
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)
+    # Use environment variable for port (Railway sets PORT env var)
+    # Default to 5050 for local development
+    port = int(os.environ.get('PORT', 5050))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+
+    app.run(debug=debug, host='0.0.0.0', port=port)
