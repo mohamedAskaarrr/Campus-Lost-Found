@@ -410,16 +410,4 @@ This project is licensed under the **MIT License** - see LICENSE file for detail
 - ✅ No sensitive data in frontend
 - ✅ CSV data is local storage only
 
----
 
-## 📞 Support
-
-For issues or questions:
-1. Check the [Troubleshooting](#-troubleshooting) section
-2. Review API documentation above
-3. Check browser console for frontend errors
-4. Check Flask output for backend errors
-
----
-
-*Last Updated: April 2026 | Status: Production Ready*
