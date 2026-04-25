@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ArrowLeft, Send, Heart } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Send, Heart, LockKeyhole } from 'lucide-react'
 import Stepper from '../components/Stepper'
-import { createFoundReport } from '../api/client'
+import { createFoundReport, getLostReports, refreshMatchesForActiveLostReports } from '../api/client'
 import useStore from '../store/useStore'
+import CategoryIcon from '../components/CategoryIcon'
 
 function nowLocal() {
   const d = new Date()
@@ -14,13 +15,13 @@ function nowLocal() {
 
 const STEPS = ['Category', 'Description', 'Details', 'Contact']
 const CATEGORIES = [
-  { value: 'id_card', emoji: '🪪', label: 'ID Card' },
-  { value: 'charger', emoji: '🔌', label: 'Charger' },
-  { value: 'bottle', emoji: '🍶', label: 'Bottle' },
-  { value: 'notebook', emoji: '📒', label: 'Notebook' },
-  { value: 'headphones', emoji: '🎧', label: 'Headphones' },
-  { value: 'keys', emoji: '🔑', label: 'Keys' },
-  { value: 'other', emoji: '📦', label: 'Other' },
+  { value: 'id_card', label: 'ID Card' },
+  { value: 'charger', label: 'Charger' },
+  { value: 'bottle', label: 'Bottle' },
+  { value: 'notebook', label: 'Notebook' },
+  { value: 'headphones', label: 'Headphones' },
+  { value: 'keys', label: 'Keys' },
+  { value: 'other', label: 'Other' },
 ]
 const COLORS = ['Black','White','Blue','Red','Green','Yellow','Orange','Gray','Brown','Pink','Purple','Silver']
 const LOCATIONS = [
@@ -60,6 +61,14 @@ export default function ReportFound() {
       }
       const { data } = await createFoundReport(payload)
       addFoundReport(data)
+      const { data: lostRows } = await getLostReports()
+      const lostReports = Array.isArray(lostRows) ? lostRows : []
+      const matchMap = await refreshMatchesForActiveLostReports(lostReports)
+      for (const [lostId, matches] of Object.entries(matchMap)) {
+        if (Array.isArray(matches)) {
+          useStore.getState().setMatchResults(lostId, matches)
+        }
+      }
       showToast('Found report submitted! You\'re awesome 🙌', 'success')
       navigate('/my-reports')
     } catch (err) {
@@ -71,15 +80,10 @@ export default function ReportFound() {
   }
 
   return (
-    <div className="page-enter" style={{ padding: '48px 0', minHeight: 'calc(100vh - 64px)', background: 'var(--neutral-50)' }}>
+    <div className="page-enter report-page">
       <div className="container" style={{ maxWidth: 680 }}>
         <div style={{ marginBottom: 36 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#ECFDF5', color: 'var(--success)',
-            padding: '5px 14px', borderRadius: 999, fontSize: 12, fontWeight: 700,
-            marginBottom: 14, border: '1px solid #A7F3D0', textTransform: 'uppercase', letterSpacing: '0.05em',
-          }}>
+          <div className="report-eyebrow">
             <Heart size={12} /> Good Samaritan
           </div>
           <h1 style={{ marginBottom: 8 }}>Report a Found Item</h1>
@@ -95,16 +99,15 @@ export default function ReportFound() {
                 <h3 style={{ marginBottom: 6 }}>What did you find?</h3>
                 <p style={{ color: 'var(--neutral-500)', fontSize: 14, marginBottom: 24 }}>Select the category that best describes the item you found.</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px,1fr))', gap: 12 }}>
-                  {CATEGORIES.map(({ value, emoji, label }) => (
+                  {CATEGORIES.map(({ value, label }) => (
                     <motion.div key={value} whileHover={{ scale: 1.04, y: -3 }} whileTap={{ scale: 0.97 }}
                       className={`category-card${form.category === value ? ' selected' : ''}`}
                       onClick={() => set('category', value)}
-                      style={{
-                        borderColor: form.category === value ? 'var(--success)' : undefined,
-                        background: form.category === value ? 'linear-gradient(135deg,#ECFDF5,#D1FAE5)' : undefined,
-                      }}>
-                      <div style={{ fontSize: 36, marginBottom: 8, lineHeight: 1 }}>{emoji}</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: form.category === value ? 'var(--success)' : 'var(--neutral-700)' }}>{label}</div>
+                    >
+                      <div style={{ marginBottom: 10 }}>
+                        <CategoryIcon category={value} />
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: form.category === value ? 'var(--neon-green)' : 'var(--neutral-700)' }}>{label}</div>
                     </motion.div>
                   ))}
                 </div>
@@ -130,7 +133,7 @@ export default function ReportFound() {
                       <motion.button key={c} whileTap={{ scale: 0.95 }}
                         className={`color-chip${form.color === c ? ' selected' : ''}`}
                         onClick={() => set('color', form.color === c ? '' : c)} type="button"
-                        style={{ borderColor: form.color === c ? 'var(--success)' : undefined, background: form.color === c ? '#ECFDF5' : undefined, color: form.color === c ? 'var(--success)' : undefined }}>
+                      >
                         {c}
                       </motion.button>
                     ))}
@@ -165,14 +168,14 @@ export default function ReportFound() {
                   <input className="form-input" type="text" placeholder="your.email@sewedy.edu.eg or 010xxxxxxxx"
                     value={form.finder_contact} onChange={e => set('finder_contact', e.target.value)} />
                   <span style={{ fontSize: 12, color: 'var(--neutral-400)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    🔒 Private — only revealed to the confirmed owner.
+                    <LockKeyhole size={13} /> Private — only revealed to the confirmed owner.
                   </span>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 36, paddingTop: 24, borderTop: '1px solid var(--neutral-100)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 36, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
             <button className="btn btn-secondary" onClick={() => setStep(s => s - 1)} disabled={step === 0} style={{ opacity: step === 0 ? 0.35 : 1 }}>
               <ArrowLeft size={16} /> Back
             </button>

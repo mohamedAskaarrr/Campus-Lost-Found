@@ -1,20 +1,21 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ArrowLeft, Send, Sparkles } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Send, Sparkles, FileText, Folder, MapPin, Palette, Clock3 } from 'lucide-react'
 import Stepper from '../components/Stepper'
-import { createLostReport, classifyItem } from '../api/client'
+import { createLostReport, classifyItem, runMatchForLostReport } from '../api/client'
 import useStore from '../store/useStore'
+import CategoryIcon from '../components/CategoryIcon'
 
 const STEPS = ['Category', 'Description', 'Details', 'Review']
 const CATEGORIES = [
-  { value: 'id_card',    emoji: '🪪', label: 'ID Card'    },
-  { value: 'charger',    emoji: '🔌', label: 'Charger'    },
-  { value: 'bottle',     emoji: '🍶', label: 'Bottle'     },
-  { value: 'notebook',   emoji: '📒', label: 'Notebook'   },
-  { value: 'headphones', emoji: '🎧', label: 'Headphones' },
-  { value: 'keys',       emoji: '🔑', label: 'Keys'       },
-  { value: 'other',      emoji: '📦', label: 'Other'      },
+  { value: 'id_card', label: 'ID Card' },
+  { value: 'charger', label: 'Charger' },
+  { value: 'bottle', label: 'Bottle' },
+  { value: 'notebook', label: 'Notebook' },
+  { value: 'headphones', label: 'Headphones' },
+  { value: 'keys', label: 'Keys' },
+  { value: 'other', label: 'Other' },
 ]
 const COLORS = ['Black','White','Blue','Red','Green','Yellow','Orange','Gray','Brown','Pink','Purple','Silver']
 const LOCATIONS = [
@@ -77,6 +78,8 @@ export default function ReportLost() {
       }
       const { data } = await createLostReport(payload)
       addLostReport(data)
+      const matches = await runMatchForLostReport(data)
+      useStore.getState().setMatchResults(data.id, matches)
       showToast('Lost report submitted! Running AI matcher…', 'success')
       navigate(`/matches/${data.id}`)
     } catch (err) {
@@ -95,17 +98,12 @@ export default function ReportLost() {
   }
 
   return (
-    <div className="page-enter" style={{ padding: '48px 0', minHeight: 'calc(100vh - 64px)', background: 'var(--neutral-50)' }}>
+    <div className="page-enter report-page">
       <div className="container" style={{ maxWidth: 700 }}>
 
         {/* Header */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#EFF6FF', color: 'var(--primary)',
-            padding: '5px 14px', borderRadius: 999, fontSize: 12, fontWeight: 700,
-            marginBottom: 14, border: '1px solid #BFDBFE', textTransform: 'uppercase', letterSpacing: '0.05em',
-          }}>
+          <div className="report-eyebrow">
             <Sparkles size={12} /> AI-Powered Matching
           </div>
           <h1 style={{ marginBottom: 8 }}>Report a Lost Item</h1>
@@ -127,7 +125,7 @@ export default function ReportLost() {
                   Select one category. Our AI uses this to filter candidates first.
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px,1fr))', gap: 12 }}>
-                  {CATEGORIES.map(({ value, emoji, label }) => (
+                  {CATEGORIES.map(({ value, label }) => (
                     <motion.div
                       key={value}
                       whileHover={{ scale: 1.04, y: -3 }}
@@ -135,10 +133,12 @@ export default function ReportLost() {
                       className={`category-card${form.category === value ? ' selected' : ''}`}
                       onClick={() => set('category', value)}
                     >
-                      <div style={{ fontSize: 36, marginBottom: 8, lineHeight: 1 }}>{emoji}</div>
+                      <div style={{ marginBottom: 10 }}>
+                        <CategoryIcon category={value} />
+                      </div>
                       <div style={{
                         fontSize: 13, fontWeight: 700,
-                        color: form.category === value ? 'var(--primary)' : 'var(--neutral-700)',
+                        color: form.category === value ? 'var(--neon-green)' : 'var(--neutral-700)',
                       }}>{label}</div>
                     </motion.div>
                   ))}
@@ -227,26 +227,19 @@ export default function ReportLost() {
                 <p style={{ color: 'var(--neutral-500)', fontSize: 14, marginBottom: 24 }}>
                   Confirm your details, then submit. The AI engine will rank all matching found reports for you.
                 </p>
-                <div style={{
-                  background: 'linear-gradient(135deg, #F8FAFF, #EFF6FF)',
-                  borderRadius: 14,
-                  padding: '20px 24px',
-                  border: '1px solid #DBEAFE',
-                  display: 'grid',
-                  gap: 16,
-                }}>
+                <div className="review-panel">
                   {[
-                    { label: 'Category',    value: form.category.replace('_', ' '), emoji: '📁' },
-                    { label: 'Description', value: form.description,               emoji: '📝' },
-                    { label: 'Colour',      value: form.color || '—',              emoji: '🎨' },
-                    { label: 'Location',    value: form.location_lost,             emoji: '📍' },
-                    { label: 'Time Lost',   value: form.time_lost ? new Date(form.time_lost).toLocaleString() : 'Now', emoji: '🕐' },
-                  ].map(({ label, value, emoji }) => (
+                    { label: 'Category', value: form.category.replace('_', ' '), icon: Folder },
+                    { label: 'Description', value: form.description, icon: FileText },
+                    { label: 'Colour', value: form.color || '-', icon: Palette },
+                    { label: 'Location', value: form.location_lost, icon: MapPin },
+                    { label: 'Time Lost', value: form.time_lost ? new Date(form.time_lost).toLocaleString() : 'Now', icon: Clock3 },
+                  ].map(({ label, value, icon: Icon }) => (
                     <div key={label} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: 18, flexShrink: 0 }}>{emoji}</span>
+                      <Icon size={18} style={{ flexShrink: 0, color: 'var(--neon-cyan)', marginTop: 2 }} />
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--neutral-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>{label}</div>
-                        <div style={{ fontSize: 14, color: 'var(--neutral-800)', textTransform: label === 'Category' || label === 'Colour' ? 'capitalize' : 'none', lineHeight: 1.5 }}>{value}</div>
+                        <div style={{ fontSize: 14, color: 'var(--text)', textTransform: label === 'Category' || label === 'Colour' ? 'capitalize' : 'none', lineHeight: 1.5 }}>{value}</div>
                       </div>
                     </div>
                   ))}
@@ -257,7 +250,7 @@ export default function ReportLost() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 36, paddingTop: 24, borderTop: '1px solid var(--neutral-100)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 36, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
             <button
               className="btn btn-secondary"
               onClick={() => setStep(s => s - 1)}

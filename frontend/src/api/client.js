@@ -10,18 +10,23 @@ const aiApi = axios.create({
 })
 
 // Insforge BaaS for Database CRUD
-const DB_BASE = 'https://nj978ng4.us-east.insforge.app/api/db'
-const DB_KEY = 'ik_dc3cf20c68b55a18a35e8644d81f8a3d'
+const DB_BASE = import.meta.env.VITE_INSFORGE_DB_BASE_URL || 'https://nj978ng4.us-east.insforge.app/api/db'
+const DB_KEY = import.meta.env.VITE_INSFORGE_DB_KEY
+
+const dbHeaders = {
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation',
+}
+
+if (DB_KEY) {
+  dbHeaders.apikey = DB_KEY
+  dbHeaders.Authorization = `Bearer ${DB_KEY}`
+}
 
 const dbApi = axios.create({
   baseURL: DB_BASE,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-    'apikey': DB_KEY,
-    'Authorization': `Bearer ${DB_KEY}`, // For Insforge public access
-    'Prefer': 'return=representation'
-  },
+  headers: dbHeaders,
 })
 
 /* ── Lost Reports (Insforge DB) ── */
@@ -36,6 +41,39 @@ export const getFoundReports   = ()     => dbApi.get('/found_reports?order=creat
 /* ── Matching (AI Engine) ── */
 export const findMatches = (payload) => aiApi.post('/match', payload)
 export const getMatches  = (lostId)  => dbApi.get(`/match_results?lost_report_id=eq.${lostId}&order=confidence_score.desc`)
+
+export function toMatchPayload(lostReport) {
+  if (!lostReport?.id) throw new Error('Lost report is missing an id.')
+
+  return {
+    lost_report_id: lostReport.id,
+    description: lostReport.description,
+    category: lostReport.category,
+    color: lostReport.color,
+    location_lost: lostReport.location_lost,
+    time_lost: lostReport.time_lost,
+  }
+}
+
+export async function runMatchForLostReport(lostReport) {
+  const { data } = await findMatches(toMatchPayload(lostReport))
+  return data.matches || []
+}
+
+export async function refreshMatchesForActiveLostReports(lostReports = []) {
+  const activeReports = lostReports.filter((report) => report?.id && report.status !== 'closed')
+  const results = {}
+
+  for (const report of activeReports) {
+    try {
+      results[report.id] = await runMatchForLostReport(report)
+    } catch (error) {
+      results[report.id] = { error }
+    }
+  }
+
+  return results
+}
 
 /* ── Classify (AI Engine) ── */
 export const classifyItem = (description) => aiApi.post('/classify', { description })

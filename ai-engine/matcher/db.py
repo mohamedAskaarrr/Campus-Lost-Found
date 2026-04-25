@@ -11,15 +11,23 @@ from .ranker import FoundItem
 
 logger = logging.getLogger(__name__)
 
-INSFORGE_URL = "https://nj978ng4.us-east.insforge.app/api/db"
-INSFORGE_KEY = "ik_dc3cf20c68b55a18a35e8644d81f8a3d"
+INSFORGE_URL = os.getenv("INSFORGE_DB_BASE_URL", "https://nj978ng4.us-east.insforge.app/api/db")
+INSFORGE_KEY = os.getenv("INSFORGE_DB_API_KEY") or os.getenv("INSFORGE_API_KEY")
 
-headers = {
-    "apikey": INSFORGE_KEY,
-    "Authorization": f"Bearer {INSFORGE_KEY}",
-    "Content-Type": "application/json",
-    "Prefer": "return=representation"
-}
+
+def _headers() -> dict:
+    if not INSFORGE_KEY:
+        return {
+            "Content-Type": "application/json",
+            "Prefer": "return=representation",
+        }
+
+    return {
+        "apikey": INSFORGE_KEY,
+        "Authorization": f"Bearer {INSFORGE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
+    }
 
 def fetch_active_found_reports() -> list[FoundItem]:
     """
@@ -27,7 +35,7 @@ def fetch_active_found_reports() -> list[FoundItem]:
     """
     try:
         url = f"{INSFORGE_URL}/found_reports?status=eq.active&order=created_at.desc"
-        resp = requests.get(url, headers=headers, timeout=10)
+        resp = requests.get(url, headers=_headers(), timeout=10)
         resp.raise_for_status()
         rows = resp.json()
 
@@ -69,7 +77,7 @@ def save_match_results(lost_report_id: str, candidates: list) -> None:
 
     try:
         url = f"{INSFORGE_URL}/match_results"
-        resp = requests.post(url, json=payloads, headers=headers, timeout=10)
+        resp = requests.post(url, json=payloads, headers=_headers(), timeout=10)
         resp.raise_for_status()
         logger.info(f"Saved {len(candidates)} match results to Insforge for {lost_report_id}.")
     except Exception as e:

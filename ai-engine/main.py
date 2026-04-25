@@ -270,38 +270,59 @@ def find_matches(request: MatchRequest):
         time_lost=time_lost,
     )
 
-    # Collect found items from in-memory store
+    # Collect found items from both in-memory demo store and Insforge DB.
+    # (The frontend writes found reports to Insforge, so DB is required for real matches.)
     found_items: list[FoundItem] = []
-    for fr in _found_reports.values():
-        if fr.get("status", "active") != "active":
-            continue
-        try:
-            tf = datetime.fromisoformat(fr["time_found"].replace("Z", "+00:00"))
-        except Exception:
-            tf = datetime.utcnow()
-        found_items.append(FoundItem(
-            id=fr["id"],
-            description=fr.get("description", ""),
-            category=fr.get("category", "other"),
-            color=fr.get("color"),
-            location_found=fr.get("location_found", ""),
-            time_found=tf,
-            finder_contact=fr.get("finder_contact", ""),
-        ))
+    found_meta: dict[str, dict] = {}
 
-    # Fallback: try DB if store is empty
-    if not found_items:
-        try:
-            from matcher.db import fetch_active_found_reports
-            found_items = fetch_active_found_reports()
-        except Exception as e:
-            logger.warning(f"DB unavailable: {e}")
+    def _add_found(item: FoundItem) -> None:
+        # De-dupe by id but always refresh meta
+        if item.id not in found_meta:
+            found_items.append(item)
+        found_meta[item.id] = {
+            "location_found": item.location_found,
+            "finder_contact": item.finder_contact,
+            "category": item.category,
+        }
+
+    # 1) Insforge DB (real user submissions)
+    db_items: list[FoundItem] = []
+    try:
+        from matcher.db import fetch_active_found_reports
+
+        db_items = fetch_active_found_reports()
+        for item in db_items:
+            _add_found(item)
+    except Exception as e:
+        logger.warning(f"DB unavailable: {e}")
+
+    # 2) Demo in-memory store (only if DB has no rows)
+    if not db_items:
+        for fr in _found_reports.values():
+            if fr.get("status", "active") != "active":
+                continue
+            try:
+                tf = datetime.fromisoformat(fr["time_found"].replace("Z", "+00:00"))
+            except Exception:
+                tf = datetime.utcnow()
+
+            _add_found(
+                FoundItem(
+                    id=fr["id"],
+                    description=fr.get("description", ""),
+                    category=fr.get("category", "other"),
+                    color=fr.get("color"),
+                    location_found=fr.get("location_found", ""),
+                    time_found=tf,
+                    finder_contact=fr.get("finder_contact", ""),
+                )
+            )
 
     candidates = rank_matches(lost, found_items)
 
     results = []
     for c in candidates:
-        fr_data = _found_reports.get(c.found_report_id, {})
+        meta = found_meta.get(c.found_report_id, {})
         results.append(MatchResult(
             found_report_id=c.found_report_id,
             confidence_score=c.confidence_score,
@@ -313,9 +334,9 @@ def find_matches(request: MatchRequest):
                 location_match=c.feature_scores.get("location", 0.0),
                 time_proximity=c.feature_scores.get("time", 0.0),
             ),
-            location_found=fr_data.get("location_found"),
-            finder_contact=fr_data.get("finder_contact"),
-            category=fr_data.get("category"),
+            location_found=meta.get("location_found"),
+            finder_contact=meta.get("finder_contact"),
+            category=meta.get("category"),
         ))
 
     _match_cache[request.lost_report_id] = [r.model_dump() for r in results]

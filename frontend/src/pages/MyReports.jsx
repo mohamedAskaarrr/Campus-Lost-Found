@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Plus, Search, FileText, ArrowRight } from 'lucide-react'
+import { Plus, Search, FileText, ArrowRight, MapPin, Palette } from 'lucide-react'
 import StatusBadge from '../components/StatusBadge'
 import useStore from '../store/useStore'
 import { getLostReports } from '../api/client'
-
-const CATEGORY_ICONS = {
-  id_card: '🪪', charger: '🔌', bottle: '🍶',
-  notebook: '📒', headphones: '🎧', keys: '🔑', other: '📦',
-}
+import CategoryIcon from '../components/CategoryIcon'
 
 export default function MyReports() {
   const { lostReports, setLostReports } = useStore()
@@ -52,8 +48,8 @@ export default function MyReports() {
             <button key={f} onClick={() => setFilter(f)} style={{
               padding: '10px 18px', background: 'none', border: 'none', cursor: 'pointer',
               fontSize: 14, fontWeight: filter === f ? 600 : 400,
-              color: filter === f ? 'var(--primary)' : 'var(--neutral-mid)',
-              borderBottom: `2px solid ${filter === f ? 'var(--primary)' : 'transparent'}`,
+              color: filter === f ? 'var(--neon-green)' : 'var(--neutral-mid)',
+              borderBottom: `2px solid ${filter === f ? 'var(--neon-green)' : 'transparent'}`,
               marginBottom: -1, textTransform: 'capitalize',
             }}>{f}</button>
           ))}
@@ -80,9 +76,7 @@ export default function MyReports() {
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06 }}
                 style={{ padding: 20, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                <div style={{ fontSize: 36, flexShrink: 0 }}>
-                  {CATEGORY_ICONS[report.category] || '📦'}
-                </div>
+                <CategoryIcon category={report.category} className="item-illustration-sm" size={21} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -101,8 +95,8 @@ export default function MyReports() {
                     {report.description}
                   </p>
                   <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--neutral-light)', flexWrap: 'wrap' }}>
-                    <span>📍 {report.location_lost}</span>
-                    {report.color && <span>🎨 {report.color}</span>}
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><MapPin size={12} /> {report.location_lost}</span>
+                    {report.color && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><Palette size={12} /> {report.color}</span>}
                   </div>
                 </div>
                 <Link to={`/matches/${report.id}`} style={{

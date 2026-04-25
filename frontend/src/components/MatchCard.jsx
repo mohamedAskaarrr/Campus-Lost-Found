@@ -2,11 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, MapPin } from 'lucide-react'
-
-const CAT_ICONS = {
-  id_card: '🪪', charger: '🔌', bottle: '🍶',
-  notebook: '📒', headphones: '🎧', keys: '🔑', other: '📦',
-}
+import CategoryIcon from './CategoryIcon'
 
 function ScoreBar({ value, color }) {
   const pct = Math.round(value * 100)
@@ -30,9 +26,7 @@ export default function MatchCard({ match, lostId, index }) {
   const navigate = useNavigate()
   const pct = Math.round(match.confidence_score * 100)
 
-  const confColor = pct >= 70 ? 'var(--success)' : pct >= 40 ? 'var(--warning)' : 'var(--danger)'
-  const confCls   = pct >= 70 ? 'conf-high'      : pct >= 40 ? 'conf-medium'   : 'conf-low'
-
+  const confColor = pct >= 70 ? 'var(--neon-green)' : pct >= 40 ? 'var(--warning)' : 'var(--danger)'
   const fs = match.feature_scores || {}
 
   return (
@@ -48,19 +42,12 @@ export default function MatchCard({ match, lostId, index }) {
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 24, flexShrink: 0,
-          }}>
-            {CAT_ICONS[match.category] || '📦'}
-          </div>
+          <CategoryIcon category={match.category} className="item-illustration-sm" size={21} />
           <div>
-            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--neutral-800)' }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)' }}>
               Match #{index + 1}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--neutral-400)', fontWeight: 500 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-dim)', fontWeight: 500 }}>
               Found report · {match.found_report_id?.slice(0, 8)}…
             </div>
           </div>
@@ -69,7 +56,8 @@ export default function MatchCard({ match, lostId, index }) {
         {/* Score badge */}
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          background: confColor === 'var(--success)' ? '#ECFDF5' : confColor === 'var(--warning)' ? '#FFFBEB' : '#FEF2F2',
+          background: pct >= 70 ? 'rgba(0,255,136,.1)' : pct >= 40 ? 'rgba(245,158,11,.1)' : 'rgba(239,68,68,.1)',
+          border: `1px solid ${pct >= 70 ? 'rgba(0,255,136,.24)' : pct >= 40 ? 'rgba(245,158,11,.24)' : 'rgba(239,68,68,.24)'}`,
           padding: '8px 14px', borderRadius: 12,
         }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: confColor, lineHeight: 1 }}>{pct}%</span>
@@ -86,9 +74,9 @@ export default function MatchCard({ match, lostId, index }) {
       <p style={{
         fontSize: 13, color: 'var(--neutral-500)', lineHeight: 1.65,
         margin: '0 0 14px',
-        background: 'var(--neutral-50)',
+        background: 'rgba(255,255,255,.04)',
         padding: '10px 14px', borderRadius: 10,
-        borderLeft: '3px solid var(--neutral-200)',
+        borderLeft: '3px solid rgba(0,212,255,.28)',
       }}>
         {match.explanation}
       </p>
@@ -102,21 +90,21 @@ export default function MatchCard({ match, lostId, index }) {
           { key: 'location_match',  label: 'Location', color: 'var(--warning)' },
         ].map(({ key, label, color }) => (
           <div key={key} style={{ fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ color: 'var(--neutral-400)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
+            <span style={{ color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
             <span style={{ fontWeight: 800, color }}>{Math.round((fs[key] || 0) * 100)}%</span>
           </div>
         ))}
       </div>
 
       {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid var(--neutral-100)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 12, borderTop: '1px solid var(--border)' }}>
         {match.location_found ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--neutral-400)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--text-dim)' }}>
             <MapPin size={12} />
             <span>{match.location_found}</span>
           </div>
         ) : <span />}
-        <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--primary)', fontSize: 13, fontWeight: 700 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--neon-green)', fontSize: 13, fontWeight: 700 }}>
           View detail <ArrowRight size={14} />
         </span>
       </div>

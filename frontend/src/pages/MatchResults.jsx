@@ -1,10 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Search } from 'lucide-react'
+import { ArrowLeft, Download, Search } from 'lucide-react'
 import MatchCard from '../components/MatchCard'
 import { findMatches, getLostReport } from '../api/client'
 import useStore from '../store/useStore'
+import CategoryIcon from '../components/CategoryIcon'
+
+function csvEscape(value) {
+  const s = String(value ?? '')
+  if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`
+  return s
+}
+
+function downloadCsv(filename, rows) {
+  const header = Object.keys(rows[0] || {})
+  const lines = [header.join(',')]
+  for (const row of rows) {
+    lines.push(header.map((k) => csvEscape(row[k])).join(','))
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
 
 export default function MatchResults() {
   const { lostId } = useParams()
@@ -47,6 +71,23 @@ export default function MatchResults() {
 
   const matches = cached || []
 
+  const handleDownload = () => {
+    if (!lost || matches.length === 0) return
+    const rows = matches.map((m) => ({
+      lost_report_id: lostId,
+      lost_category: lost.category,
+      lost_location: lost.location_lost,
+      lost_time: lost.time_lost,
+      found_report_id: m.found_report_id,
+      found_category: m.category,
+      found_location: m.location_found,
+      finder_contact: m.finder_contact,
+      confidence_score: m.confidence_score,
+      explanation: m.explanation,
+    }))
+    downloadCsv(`match_results_${lostId}.csv`, rows)
+  }
+
   return (
     <div className="page-enter" style={{ padding: '48px 0', minHeight: 'calc(100vh - 64px)' }}>
       <div className="container" style={{ maxWidth: 760 }}>
@@ -61,11 +102,8 @@ export default function MatchResults() {
 
         {/* Lost item summary */}
         {lost && (
-          <div className="card" style={{ padding: 20, marginBottom: 32, display: 'flex', gap: 14, alignItems: 'center',
-            background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)' }}>
-            <div style={{ fontSize: 40 }}>
-              {{ id_card: '🪪', charger: '🔌', bottle: '🍶', notebook: '📒', headphones: '🎧', keys: '🔑', other: '📦' }[lost.category] || '📦'}
-            </div>
+          <div className="card" style={{ padding: 20, marginBottom: 32, display: 'flex', gap: 14, alignItems: 'center' }}>
+            <CategoryIcon category={lost.category} className="item-illustration-sm" size={22} />
             <div>
               <div style={{ fontWeight: 700, fontSize: 16, textTransform: 'capitalize', marginBottom: 4 }}>
                 Lost: {lost.category?.replace('_', ' ')}
@@ -78,9 +116,16 @@ export default function MatchResults() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <h2 style={{ margin: 0 }}>Match Results</h2>
           {!loading && (
-            <span style={{ fontSize: 13, color: 'var(--neutral-mid)' }}>
-              {matches.length} {matches.length === 1 ? 'result' : 'results'} found
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 13, color: 'var(--neutral-mid)' }}>
+                {matches.length} {matches.length === 1 ? 'result' : 'results'} found
+              </span>
+              {matches.length > 0 && (
+                <button className="btn btn-secondary" onClick={handleDownload} style={{ fontSize: 13 }}>
+                  <Download size={14} /> Download CSV
+                </button>
+              )}
+            </div>
           )}
         </div>
 

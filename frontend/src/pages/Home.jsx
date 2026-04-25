@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
-import { Search, Plus, ArrowRight, Zap, Shield, Users, TrendingUp, Clock, CheckCircle } from 'lucide-react'
+import { Search, Plus, ArrowRight, Zap, Shield, Users, TrendingUp, Clock, CheckCircle, Volume2, VolumeX, GraduationCap } from 'lucide-react'
+import heroPoster from '../assets/hero.png'
+import CategoryIcon from '../components/CategoryIcon'
 
 // ── Animated counter ──
 function Counter({ target, suffix = '', duration = 2000 }) {
@@ -32,12 +34,12 @@ const STATS = [
 ]
 
 const CATEGORIES = [
-  { emoji: '🪪', label: 'ID Cards',   desc: '~15 reports/week' },
-  { emoji: '🔌', label: 'Chargers',   desc: '~11 reports/week' },
-  { emoji: '🍶', label: 'Bottles',    desc: '~8 reports/week'  },
-  { emoji: '📒', label: 'Notebooks',  desc: '~6 reports/week'  },
-  { emoji: '🎧', label: 'Headphones', desc: '~5 reports/week'  },
-  { emoji: '🔑', label: 'Keys',       desc: '~7 reports/week'  },
+  { category: 'id_card', label: 'ID Cards', desc: '~15 reports/week' },
+  { category: 'charger', label: 'Chargers', desc: '~11 reports/week' },
+  { category: 'bottle', label: 'Bottles', desc: '~8 reports/week' },
+  { category: 'notebook', label: 'Notebooks', desc: '~6 reports/week' },
+  { category: 'headphones', label: 'Headphones', desc: '~5 reports/week' },
+  { category: 'keys', label: 'Keys', desc: '~7 reports/week' },
 ]
 
 const FEATURES = [
@@ -75,55 +77,79 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 const item = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [.4,0,.2,1] } } }
 
 export default function Home() {
+  const videoRef = useRef(null)
+  const [videoMuted, setVideoMuted] = useState(true)
+
+  const toggleVideoSound = () => {
+    const nextMuted = !videoMuted
+    setVideoMuted(nextMuted)
+    if (videoRef.current) {
+      videoRef.current.muted = nextMuted
+      if (!nextMuted) videoRef.current.play().catch(() => {})
+    }
+  }
+
   return (
     <div className="page-enter">
 
       {/* ════════════════ HERO ════════════════ */}
-      <section className="hero-bg" style={{ padding: '100px 0 120px' }}>
-        <div className="hero-grid" />
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
+      <section className="hero-bg hero-video-bg">
+        <video
+          ref={videoRef}
+          className="hero-video"
+          autoPlay
+          muted={videoMuted}
+          loop
+          playsInline
+          poster={heroPoster}
+          aria-label="Warm futuristic campus library lost and found intro"
+        >
+          <source src="/videos/futuristic-library-lost-and-found.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-video-overlay" />
+        <button
+          type="button"
+          className="hero-sound-toggle"
+          onClick={toggleVideoSound}
+          aria-pressed={!videoMuted}
+          aria-label={videoMuted ? 'Turn hero video sound on' : 'Mute hero video'}
+        >
+          {videoMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}
+        </button>
+      </section>
 
-        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+      <section className="hero-content-section">
+        <div className="container hero-bento" style={{ position: 'relative', zIndex: 1 }}>
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="hero-copy-panel"
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.7, ease: [.4,0,.2,1] }}
           >
             {/* University pill */}
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
               transition={{ delay: 0.1, duration: 0.5, type: 'spring' }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'rgba(255,255,255,.1)',
-                border: '1px solid rgba(255,255,255,.2)',
-                backdropFilter: 'blur(12px)',
-                color: '#fff',
-                padding: '8px 18px',
-                borderRadius: 999,
-                fontSize: 13,
-                fontWeight: 600,
-                marginBottom: 28,
-              }}
+              className="system-pill"
             >
-              <span style={{ fontSize: 16 }}>🎓</span>
+              <GraduationCap size={15} />
               El Sewedy University of Technology · CET251 AI Project
             </motion.div>
 
-            <h1 style={{ color: '#fff', marginBottom: 20, maxWidth: 760, margin: '0 auto 20px' }}>
+            <h1 style={{ color: '#fff', marginBottom: 20, maxWidth: 760 }}>
               Find what you lost.{' '}
               <span className="gradient-text-blue">AI handles the rest.</span>
             </h1>
 
-            <p style={{ color: 'rgba(255,255,255,.72)', fontSize: 18, maxWidth: 560, margin: '0 auto 44px', lineHeight: 1.75 }}>
+            <p style={{ color: 'rgba(255,255,255,.72)', fontSize: 18, maxWidth: 560, margin: '0 0 28px', lineHeight: 1.75 }}>
               Submit a lost or found report and let our intelligent TF-IDF matching engine
               rank the most likely matches — with confidence scores and explanations.
             </p>
 
-            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Link to="/report-lost" className="btn btn-accent btn-lg">
                 <Search size={20} /> Report Lost Item
               </Link>
@@ -135,12 +161,35 @@ export default function Home() {
             {/* Trust line */}
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.6 }}
-              style={{ color: 'rgba(255,255,255,.45)', fontSize: 13, marginTop: 28 }}
+              className="terminal-line"
             >
-              ✓ No signup required · ✓ Works entirely on campus · ✓ AI-powered in &lt;2 seconds
+              <span><CheckCircle size={13} /> No signup required</span>
+              <span><CheckCircle size={13} /> Works entirely on campus</span>
+              <span><CheckCircle size={13} /> AI-powered in &lt;2 seconds</span>
             </motion.p>
+          </motion.div>
+
+          <motion.div
+            className="hero-terminal-card"
+            initial={{ opacity: 0, y: 30, scale: .96 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ delay: .2, duration: .6, ease: [.4,0,.2,1] }}
+          >
+            <div className="terminal-topline">
+              <span className="status-dot online" />
+              archive.scan
+              <span>live</span>
+            </div>
+            <div className="terminal-row"><span>engine</span><strong>TF-IDF + cosine</strong></div>
+            <div className="terminal-row"><span>latency</span><strong>&lt; 2s</strong></div>
+            <div className="terminal-row"><span>coverage</span><strong>campus-wide</strong></div>
+            <div className="terminal-grid-mini">
+              <span>ID</span><span>charger</span><span>keys</span><span>bottle</span>
+            </div>
           </motion.div>
         </div>
 
@@ -149,7 +198,8 @@ export default function Home() {
           <motion.div
             variants={container}
             initial="hidden"
-            animate="show"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.25 }}
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}
           >
             {STATS.map(({ label, value, suffix, icon: Icon, color }) => (
@@ -168,7 +218,7 @@ export default function Home() {
       </section>
 
       {/* ════════════════ CATEGORIES ════════════════ */}
-      <section style={{ padding: '80px 0', background: '#fff' }}>
+      <section className="bento-section" style={{ padding: '64px 0' }}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -179,19 +229,19 @@ export default function Home() {
           >
             <span style={{
               display: 'inline-block',
-              background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)',
-              color: 'var(--primary)',
+              background: 'rgba(0,255,136,.08)',
+              color: 'var(--neon-green)',
               padding: '6px 16px',
               borderRadius: 999,
               fontSize: 13,
               fontWeight: 700,
               marginBottom: 16,
-              border: '1px solid #BFDBFE',
+              border: '1px solid rgba(0,255,136,.2)',
             }}>
               6 Item Categories
             </span>
             <h2 style={{ marginBottom: 10 }}>What did you lose?</h2>
-            <p style={{ color: 'var(--neutral-500)', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
               Our AI understands natural language descriptions across all common campus item types.
             </p>
           </motion.div>
@@ -203,7 +253,7 @@ export default function Home() {
             viewport={{ once: true }}
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }}
           >
-            {CATEGORIES.map(({ emoji, label, desc }) => (
+            {CATEGORIES.map(({ category, label, desc }) => (
               <motion.div
                 key={label}
                 variants={item}
@@ -213,9 +263,11 @@ export default function Home() {
                 onClick={() => window.location.href = '/report-lost'}
                 style={{ position: 'relative', overflow: 'hidden' }}
               >
-                <div style={{ fontSize: 42, marginBottom: 10, lineHeight: 1 }}>{emoji}</div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--neutral-800)', marginBottom: 4 }}>{label}</div>
-                <div style={{ fontSize: 11, color: 'var(--neutral-400)', fontWeight: 500 }}>{desc}</div>
+                <div style={{ marginBottom: 12 }}>
+                  <CategoryIcon category={category} className="item-illustration-lg" size={30} />
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-dim)', fontWeight: 500 }}>{desc}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -223,7 +275,7 @@ export default function Home() {
       </section>
 
       {/* ════════════════ HOW IT WORKS ════════════════ */}
-      <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #F8FAFF 0%, #EFF6FF 100%)' }}>
+      <section className="bento-section" style={{ padding: '64px 0' }}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -232,7 +284,7 @@ export default function Home() {
             style={{ textAlign: 'center', marginBottom: 56 }}
           >
             <h2>How it works</h2>
-            <p style={{ color: 'var(--neutral-500)', marginTop: 10 }}>Four steps from report to reunion.</p>
+            <p style={{ color: 'var(--text-muted)', marginTop: 10 }}>Four steps from report to reunion.</p>
           </motion.div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24 }}>
@@ -247,19 +299,19 @@ export default function Home() {
               >
                 <div style={{
                   width: 48, height: 48, borderRadius: 14, marginBottom: 16,
-                  background: 'linear-gradient(135deg, var(--primary), #3B82F6)',
+                  background: 'linear-gradient(135deg, var(--neon-green), var(--neon-cyan))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 14, fontWeight: 900, color: '#fff',
                 }}>
                   {n}
                 </div>
                 <h3 style={{ fontSize: 17, marginBottom: 8 }}>{title}</h3>
-                <p style={{ fontSize: 14, color: 'var(--neutral-500)', lineHeight: 1.65 }}>{desc}</p>
+                <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.65 }}>{desc}</p>
                 {i < HOW_IT_WORKS.length - 1 && (
                   <div style={{
                     position: 'absolute',
                     top: 22, right: -12,
-                    color: 'var(--neutral-300)',
+                    color: 'var(--text-dim)',
                     display: 'none',
                   }}>→</div>
                 )}
@@ -270,7 +322,7 @@ export default function Home() {
       </section>
 
       {/* ════════════════ FEATURES ════════════════ */}
-      <section style={{ padding: '80px 0', background: '#fff' }}>
+      <section className="bento-section" style={{ padding: '64px 0' }}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -279,7 +331,7 @@ export default function Home() {
             style={{ textAlign: 'center', marginBottom: 56 }}
           >
             <h2>Built on solid AI foundations</h2>
-            <p style={{ color: 'var(--neutral-500)', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>
+            <p style={{ color: 'var(--text-muted)', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>
               Every part of the pipeline is grounded in CET251 AI concepts — agents, informed search, and NLP.
             </p>
           </motion.div>
@@ -300,7 +352,7 @@ export default function Home() {
                 <div style={{
                   display: 'inline-block',
                   background: 'var(--neutral-100)',
-                  color: 'var(--neutral-500)',
+                  color: 'var(--text-muted)',
                   fontSize: 11, fontWeight: 700,
                   padding: '3px 10px', borderRadius: 999,
                   marginBottom: 12, letterSpacing: '0.05em',
@@ -308,7 +360,7 @@ export default function Home() {
                   {pill}
                 </div>
                 <h3 style={{ marginBottom: 10, fontSize: 18 }}>{title}</h3>
-                <p style={{ color: 'var(--neutral-500)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{desc}</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{desc}</p>
               </motion.div>
             ))}
           </div>
