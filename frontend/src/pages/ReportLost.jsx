@@ -138,7 +138,7 @@ export default function ReportLost() {
                       </div>
                       <div style={{
                         fontSize: 13, fontWeight: 700,
-                        color: form.category === value ? 'var(--neon-green)' : 'var(--neutral-700)',
+                        color: form.category === value ? 'var(--text-primary)' : 'var(--neutral-700)',
                       }}>{label}</div>
                     </motion.div>
                   ))}

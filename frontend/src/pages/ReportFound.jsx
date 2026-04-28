@@ -107,7 +107,7 @@ export default function ReportFound() {
                       <div style={{ marginBottom: 10 }}>
                         <CategoryIcon category={value} />
                       </div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: form.category === value ? 'var(--neon-green)' : 'var(--neutral-700)' }}>{label}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: form.category === value ? 'var(--text-primary)' : 'var(--neutral-700)' }}>{label}</div>
                     </motion.div>
                   ))}
                 </div>

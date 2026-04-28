@@ -26,7 +26,7 @@ export default function MatchCard({ match, lostId, index }) {
   const navigate = useNavigate()
   const pct = Math.round(match.confidence_score * 100)
 
-  const confColor = pct >= 70 ? 'var(--neon-green)' : pct >= 40 ? 'var(--warning)' : 'var(--danger)'
+  const confColor = pct >= 70 ? 'var(--accent)' : pct >= 40 ? 'var(--text-primary)' : 'var(--text-secondary)'
   const fs = match.feature_scores || {}
 
   return (
@@ -56,9 +56,9 @@ export default function MatchCard({ match, lostId, index }) {
         {/* Score badge */}
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          background: pct >= 70 ? 'rgba(0,255,136,.1)' : pct >= 40 ? 'rgba(245,158,11,.1)' : 'rgba(239,68,68,.1)',
-          border: `1px solid ${pct >= 70 ? 'rgba(0,255,136,.24)' : pct >= 40 ? 'rgba(245,158,11,.24)' : 'rgba(239,68,68,.24)'}`,
-          padding: '8px 14px', borderRadius: 12,
+          background: 'rgba(0,0,0,.04)',
+          border: '1px solid rgba(0,0,0,.08)',
+          padding: '8px 14px', borderRadius: 10,
         }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: confColor, lineHeight: 1 }}>{pct}%</span>
           <span style={{ fontSize: 10, fontWeight: 700, color: confColor, textTransform: 'uppercase', letterSpacing: '0.05em' }}>match</span>
@@ -104,7 +104,7 @@ export default function MatchCard({ match, lostId, index }) {
             <span>{match.location_found}</span>
           </div>
         ) : <span />}
-        <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--neon-green)', fontSize: 13, fontWeight: 700 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-primary)', fontSize: 13, fontWeight: 700 }}>
           View detail <ArrowRight size={14} />
         </span>
       </div>

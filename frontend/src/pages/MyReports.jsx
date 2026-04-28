@@ -48,8 +48,8 @@ export default function MyReports() {
             <button key={f} onClick={() => setFilter(f)} style={{
               padding: '10px 18px', background: 'none', border: 'none', cursor: 'pointer',
               fontSize: 14, fontWeight: filter === f ? 600 : 400,
-              color: filter === f ? 'var(--neon-green)' : 'var(--neutral-mid)',
-              borderBottom: `2px solid ${filter === f ? 'var(--neon-green)' : 'transparent'}`,
+              color: filter === f ? 'var(--text-primary)' : 'var(--neutral-mid)',
+              borderBottom: `2px solid ${filter === f ? 'var(--text-primary)' : 'transparent'}`,
               marginBottom: -1, textTransform: 'capitalize',
             }}>{f}</button>
           ))}
