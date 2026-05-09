@@ -1,248 +1,116 @@
 # Campus Lost-and-Found Matcher
 
-An AI-powered web application that intelligently matches lost items with found ones on university campuses using natural language processing and similarity scoring.
+An AI-assisted lost & found web application for university campuses that automatically matches reported lost items with found items using NLP, similarity scoring, and explainable feature-based ranking.
 
-## Project Overview
+## Table of Contents
+- Project concept
+- Key features
+- Architecture & Tech stack
+- Quick start
+- Data & database
+- Testing
+- Contributing
+- Contact
 
-This full-stack application solves the problem of manual, inefficient lost-and-found processes by:
-- Accepting structured reports from students (lost and found items)
-- Using TF-IDF vectorization and cosine similarity to rank potential matches
-- Providing confidence scores and human-readable explanations for each match
-- Supporting 6+ item categories with professional UI/UX
+## Project concept
 
-## Tech Stack
+Students and campus staff report lost and found items through a simple UI. The system analyzes the reports (text description, category, color, location, and time) and returns ranked candidate matches with a confidence score and a human-readable explanation. This reduces manual effort and speeds up reunifications.
 
-### Frontend
-- **React 18** with Vite
-- **Tailwind CSS** for styling
-- **Zustand** for state management
-- **React Router v6** for navigation
-- **Framer Motion** for animations
-- **Lucide React** for icons
-- **Axios** for API calls
+## Key features
+- Natural language matching (TF-IDF + cosine similarity)
+- Multi-feature scoring (category, color, location, time)
+- Explainable match explanations and per-feature scores
+- Responsive React frontend with a polished UI
+- Modular Python AI engine (FastAPI) that can be extended with classifiers
+- Seed data and simple deployment configuration
 
-### AI Engine
-- **Python 3.11+**
-- **FastAPI** web framework
-- **scikit-learn** for NLP (TF-IDF, cosine similarity)
-- **pandas** for data manipulation
-- Optional: **MLPClassifier** for category prediction
+## Architecture & Tech stack
 
-### Backend & Database
-- **Insforge** (insforge.dev) for backend platform
-- **PostgreSQL** for data storage
-- Tables: `lost_reports`, `found_reports`, `match_results`
+- Frontend: React (Vite), Tailwind CSS, Zustand for state
+- AI Engine: Python 3.11+, FastAPI, scikit-learn, pandas
+- Backend schema: Insforge (schema + migration), PostgreSQL-compatible
+- Dev tooling: pytest for tests, GitHub Actions for CI
 
-### Deployment
-- **Railway** for cloud hosting
-- **GitHub Actions** for CI/CD
+High-level flow:
+1. User submits a lost/found report via frontend.
+2. API persists the report to the database.
+3. Matching pipeline vectorizes text, computes similarity, combines feature scores, and stores match_results.
+4. Frontend displays ranked matches with explanations.
 
-## Project Structure
+## Quick start
 
-```
-.
-├── frontend/              # React SPA
-│   ├── src/
-│   │   ├── pages/        # Page components
-│   │   ├── components/   # Reusable components
-│   │   ├── store/        # Zustand state management
-│   │   ├── api/          # API client
-│   │   └── design/       # Design system
-│   ├── package.json
-│   └── tailwind.config.ts
-├── ai-engine/            # Python FastAPI
-│   ├── matcher/          # TF-IDF, similarity scoring
-│   ├── classifier/       # Optional category classifier
-│   ├── routes/           # API endpoints
-│   ├── tests/            # Unit tests
-│   ├── main.py
-│   └── requirements.txt
-├── backend/
-│   └── insforge/         # Insforge schema definition
-├── database/
-│   └── seed_data.json    # Sample reports
-├── docs/                 # Documentation
-├── .github/workflows/    # CI/CD pipelines
-├── .env.example
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
+Prerequisites:
 - Node.js 18+
 - Python 3.11+
-- PostgreSQL (or Insforge hosted DB)
-- Git
+- PostgreSQL (or use Insforge-hosted DB)
 
-### Frontend Setup
-
+Frontend (local):
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Runs on `http://localhost:5173`
-
-### AI Engine Setup
-
+AI Engine (local):
 ```bash
 cd ai-engine
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+venv\Scripts\activate   # Windows
+# or: source venv/bin/activate  # macOS / Linux
 pip install -r requirements.txt
 python main.py
 ```
 
-Runs on `http://localhost:8000`
+Notes:
+- Frontend expects an API endpoint (set in `frontend/src/api/client.js`). Update environment or the client to point to your running AI engine/API.
+- Use `database/seed_data.json` to populate sample reports for demos.
 
-## Key Features
+## Data & database
 
-### Primary Features
-- ✅ Full-stack web application for lost/found matching
-- ✅ TF-IDF + cosine similarity matching engine
-- ✅ Support for 6 item categories (ID card, charger, bottle, notebook, headphones, keys)
-- ✅ Human-readable match explanations
-- ✅ Multi-feature scoring (text, category, color, location, time)
-- ✅ 50-100 sample test reports for demo
+- `database/seed_data.json`: sample lost/found reports for local testing.
+- `backend/insforge/migration.sql` and `backend/insforge/schema.json`: schema and migration steps for the production backend.
 
-### Secondary Features (Implemented)
-- ✅ Professional, mobile-friendly UI
-- ✅ Responsive design across all devices
-- ✅ Live deployment on Railway
-
-### Optional Features (Stretch Goals)
-- ⏳ Category classifier (neural network)
-- ⏳ Bilingual Arabic/English support
-- ⏳ Duplicate report detection
-- ⏳ Image upload with color extraction
-- ⏳ Match notification system
-
-## Database Schema
-
-### lost_reports
-- `id` (UUID, PK)
-- `student_id` (UUID, FK)
-- `category` (ENUM: id_card, charger, bottle, notebook, headphones, keys)
-- `description` (TEXT)
-- `color` (VARCHAR)
-- `location_lost` (VARCHAR)
-- `time_lost` (TIMESTAMP)
-- `status` (ENUM: active, matched, closed)
-- `created_at` (TIMESTAMP)
-
-### found_reports
-- Same as `lost_reports` with `location_found`, `time_found`, and `finder_contact`
-
-### match_results
-- `id` (UUID, PK)
-- `lost_report_id` (UUID, FK)
-- `found_report_id` (UUID, FK)
-- `confidence_score` (FLOAT, 0.0-1.0)
-- `explanation` (TEXT)
-- `feature_scores` (JSONB)
-- `created_at` (TIMESTAMP)
-
-## Matching Algorithm
-
-The system uses a weighted multi-feature scoring approach:
-
-| Feature | Weight | Method |
-|---------|--------|--------|
-| Text Description | 0.40 | TF-IDF + Cosine Similarity |
-| Item Category | 0.25 | Exact match / penalty |
-| Color | 0.15 | Fuzzy string match |
-| Location | 0.12 | Token overlap |
-| Time Proximity | 0.08 | Temporal distance scoring |
-
-Score = Σ(weight_i × score_i)
+Typical tables:
+- `lost_reports` / `found_reports` — report metadata and description
+- `match_results` — stored results with `confidence_score`, `explanation`, and `feature_scores` (JSON)
 
 ## Testing
 
-### Unit Tests
+Unit tests (AI engine):
 ```bash
 cd ai-engine
 pytest tests/
 ```
 
-Tests cover:
-- TF-IDF vectorizer
-- Cosine similarity function
-- Feature scoring
-- Explanation generation
+Integration (manual):
+1. Run frontend + AI engine
+2. Submit a lost report via the UI
+3. Check DB for stored report and `match_results`
 
-### Integration Tests
-- Submit lost report via frontend
-- Verify it appears in database
-- Trigger matching pipeline
-- Verify ranked results returned
-
-### End-to-End Accuracy
-Target: ≥70% precision@3 (top-3 results contain true match)
-
-## Deployment
-
-### Local Development
-See setup instructions above.
-
-### Railway Production
-1. Push to GitHub
-2. GitHub Actions triggers Railway deployment
-3. Frontend deployed as static site
-4. AI Engine deployed as service
-5. Shared database (Insforge)
-
-See `docs/DEPLOYMENT.md` for detailed instructions.
-
-## Success Metrics
-
-| Metric | Minimum | Stretch |
-|--------|---------|---------|
-| Sample reports | 50 | 100+ |
-| Precision@3 | ≥70% | ≥85% |
-| Item categories | 6 | 8+ |
-| Languages | English | Arabic + English |
-| Deployment | Railway | Custom domain |
-
-## Design System
-
-### Colors
-- **Primary Blue:** #1A56DB
-- **Accent Orange:** #F97316
-- **Success Green:** #10B981
-- **Warning Yellow:** #F59E0B
-- **Neutral Dark:** #1E293B
-- **Background:** #F8FAFF
-
-### Typography
-- **Font:** Inter (Google Fonts)
-- **H1:** 32px, **H2:** 24px, **H3:** 18px
-- **Body:** 16px / line-height 1.6
-
-## Development Phases
-
-1. **Phase 1:** Foundation & Project Structure (Weeks 1-2)
-2. **Phase 2:** AI Engine Implementation (Weeks 3-4)
-3. **Phase 3:** Frontend Core (Weeks 5-6)
-4. **Phase 4:** Integration & API (Week 7)
-5. **Phase 5:** UI Polish & Accessibility (Week 8)
-6. **Phase 6:** Optional Classifier (Week 9)
-7. **Phase 7:** Deployment (Week 10)
-8. **Phase 8:** Stretch Goals (Weeks 11-12)
+Goal metrics:
+- Precision@3 ≥ 70% for initial model
 
 ## Contributing
 
-This is a course project for CET251: Artificial Intelligence at El Sewedy University of Technology.
+This repository is used as a course project. If you'd like to contribute:
+1. Fork the repo and create a feature branch
+2. Add tests for new behavior
+3. Open a pull request describing your change
 
-## Resources
+Please keep changes focused and add or update tests when modifying matching logic.
 
-- [Insforge Docs](https://insforge.dev)
-- [Railway Docs](https://docs.railway.app)
-- [React Docs](https://react.dev)
-- [FastAPI Docs](https://fastapi.tiangolo.com)
-- [scikit-learn TF-IDF](https://scikit-learn.org)
+## Contact
 
-## License
+Project: Campus Lost-and-Found Matcher
+Maintainer: course project contributors
 
-Academic use only - El Sewedy University of Technology, 2024/2025
+For questions or help with running locally, open an issue in this repository.
+
+---
+
+If you want, I can also:
+- add a `docs/README.md` with deployment steps
+- wire up `frontend/.env.example` and `ai-engine/.env.example` with example variables
+- generate a simple architecture diagram
+
+Tell me which of those you want next and I'll proceed.
