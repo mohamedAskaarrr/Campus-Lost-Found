@@ -106,11 +106,3 @@ Maintainer: course project contributors
 
 For questions or help with running locally, open an issue in this repository.
 
----
-
-If you want, I can also:
-- add a `docs/README.md` with deployment steps
-- wire up `frontend/.env.example` and `ai-engine/.env.example` with example variables
-- generate a simple architecture diagram
-
-Tell me which of those you want next and I'll proceed.
