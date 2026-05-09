@@ -47,54 +47,6 @@ def _now() -> str:
 
 
 # ──────────────────────────────────────────────
-# Startup: seed demo found reports
-# This makes matching work immediately in demos.
-# ──────────────────────────────────────────────
-
-@app.on_event("startup")
-def seed_demo_data():
-    DEMO_FOUND = [
-        # ID Cards
-        {"category":"id_card",    "description":"Found a blue university student ID card near the cafeteria. Has a photo and student number. Slight scratch on the corner.","color":"blue",   "location_found":"Main Cafeteria Building A","time_found":"2024-03-10T11:00:00Z","finder_contact":"omar.khalil@sewedy.edu.eg"},
-        {"category":"id_card",    "description":"Found a white student ID card with green stripe. Found near the administrative building.","color":"white",  "location_found":"Administrative Building Corridor","time_found":"2024-03-13T11:00:00Z","finder_contact":"amr.wael@sewedy.edu.eg"},
-        {"category":"id_card",    "description":"Blue university ID card found near library turnstiles. Has barcode and photo. Says student ID on it.","color":"blue",   "location_found":"Library Main Entrance","time_found":"2024-03-15T11:00:00Z","finder_contact":"youssef.mahmoud@sewedy.edu.eg"},
-        # Chargers
-        {"category":"charger",    "description":"Found a black MacBook charger USB-C in the engineering lab. Has white tape wrapping near the adapter end.","color":"black",  "location_found":"Engineering Lab Room 301","time_found":"2024-03-10T14:00:00Z","finder_contact":"youssef.mahmoud@sewedy.edu.eg"},
-        {"category":"charger",    "description":"Dell laptop charger found in computer lab. Black adapter with blue LED ring indicator. 65W model.","color":"black",  "location_found":"Computer Lab Building C Room 205","time_found":"2024-03-13T17:00:00Z","finder_contact":"mariam.fathy@sewedy.edu.eg"},
-        {"category":"charger",    "description":"Found white USB-C charging cable in lecture hall. Approximately 1 meter long. iPhone compatible.","color":"white",  "location_found":"Lecture Hall A Row 5","time_found":"2024-03-15T13:00:00Z","finder_contact":"nour.ibrahim@sewedy.edu.eg"},
-        {"category":"charger",    "description":"Samsung fast charger adapter found. Black with Samsung branding. 45W output on label.","color":"black",  "location_found":"Study Room 4 Building A","time_found":"2024-03-17T12:00:00Z","finder_contact":"dina.mostafa@sewedy.edu.eg"},
-        # Bottles
-        {"category":"bottle",     "description":"Found a large dark blue water bottle near library study area. Has a university sticker on the side. HydroFlask brand.","color":"blue",   "location_found":"Library Study Hall Floor 2","time_found":"2024-03-11T16:00:00Z","finder_contact":"ahmed.hassan@sewedy.edu.eg"},
-        {"category":"bottle",     "description":"Silver thermos found in the sports area. Has a small dent on the bottom. Keeps drinks hot.","color":"silver", "location_found":"Sports Center Near Locker Rooms","time_found":"2024-03-14T18:00:00Z","finder_contact":"dina.mostafa@sewedy.edu.eg"},
-        {"category":"bottle",     "description":"Green Yeti-style insulated cup found. Has a university logo printed on it. Small dent near bottom.","color":"green",  "location_found":"Student Union Building","time_found":"2024-03-16T14:00:00Z","finder_contact":"mariam.fathy@sewedy.edu.eg"},
-        # Notebooks
-        {"category":"notebook",   "description":"Found a red spiral notebook in lecture hall B. Has calculus and linear algebra formulas written inside. Name written on cover.","color":"red",    "location_found":"Math Department Lecture Hall B","time_found":"2024-03-11T12:00:00Z","finder_contact":"kareem.tarek@sewedy.edu.eg"},
-        {"category":"notebook",   "description":"Found a black A5 hardcover notebook. Has design sketches and senior project notes inside.","color":"black",  "location_found":"Design Studio Building D","time_found":"2024-03-14T14:00:00Z","finder_contact":"ahmed.hassan@sewedy.edu.eg"},
-        {"category":"notebook",   "description":"Blue covered notebook found with physics lab reports inside. Dated weeks 1 to 6 of semester.","color":"blue",   "location_found":"Physics Lab Building B Room 110","time_found":"2024-03-16T16:00:00Z","finder_contact":"kareem.tarek@sewedy.edu.eg"},
-        # Headphones
-        {"category":"headphones", "description":"Found a pair of black Sony noise-cancelling headphones. Has a small colored sticker on the left ear cup. Works fine.","color":"black",  "location_found":"Library Ground Floor Entry Area","time_found":"2024-03-12T16:30:00Z","finder_contact":"sara.ali@sewedy.edu.eg"},
-        {"category":"headphones", "description":"Found white AirPods in a white charging case near engineering building. Has a small dent on the case.","color":"white",  "location_found":"Engineering Building Room 104 Bench","time_found":"2024-03-15T15:00:00Z","finder_contact":"sara.ali@sewedy.edu.eg"},
-        {"category":"headphones", "description":"Blue JBL wireless headphones found in library area. Fully charged. JBL logo visible on ear cups.","color":"blue",   "location_found":"Library Charging Station 2nd Row","time_found":"2024-03-16T17:00:00Z","finder_contact":"hana.samir@sewedy.edu.eg"},
-        # Keys
-        {"category":"keys",       "description":"Found 3 keys on a red keychain with a mini torch attached. Found near the parking area gate.","color":"red",    "location_found":"Parking Lot Gate 3","time_found":"2024-03-12T10:00:00Z","finder_contact":"nour.ibrahim@sewedy.edu.eg"},
-        {"category":"keys",       "description":"Black leather keychain with Toyota logo found. Has 3 keys attached. Car key with remote fob.","color":"black",  "location_found":"Main Building Near Reception","time_found":"2024-03-15T10:00:00Z","finder_contact":"omar.khalil@sewedy.edu.eg"},
-        {"category":"keys",       "description":"Orange keychain with 4 keys found in the cafeteria. One key looks like a padlock key.","color":"orange", "location_found":"Cafeteria Near Cashier Counter","time_found":"2024-03-17T13:30:00Z","finder_contact":"amr.wael@sewedy.edu.eg"},
-        # Other
-        {"category":"other",      "description":"Found a brown leather wallet near the ATM machine. Contains some cards but no cash. Owner should describe contents.","color":"brown",  "location_found":"Main Building ATM Area","time_found":"2024-03-18T09:00:00Z","finder_contact":"hana.samir@sewedy.edu.eg"},
-    ]
-    for fr in DEMO_FOUND:
-        rid = str(uuid.uuid4())
-        _found_reports[rid] = {
-            "id": rid,
-            "student_id": "demo",
-            "status": "active",
-            "created_at": _now(),
-            **fr,
-        }
-    logger.info(f"Seeded {len(DEMO_FOUND)} demo found reports.")
-
-
-# ──────────────────────────────────────────────
 # Pydantic Models
 # ──────────────────────────────────────────────
 

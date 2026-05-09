@@ -43,83 +43,6 @@ const STORAGE_KEYS = {
   matches: 'campus_match_results',
 }
 
-const DEMO_FOUND_REPORTS = [
-  {
-    id: 'demo-found-keys-1',
-    student_id: 'demo',
-    category: 'keys',
-    description: 'Found 3 keys on a red keychain with a mini torch attached near the parking area gate.',
-    color: 'Red',
-    location_found: 'Parking Lot Gate 3',
-    finder_contact: 'nour.ibrahim@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-keys-2',
-    student_id: 'demo',
-    category: 'keys',
-    description: 'Black leather keychain with Toyota logo found. Has 3 keys attached and a car remote fob.',
-    color: 'Black',
-    location_found: 'Main Building Reception',
-    finder_contact: 'omar.khalil@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-charger-1',
-    student_id: 'demo',
-    category: 'charger',
-    description: 'Found a black MacBook USB-C charger in the engineering lab with white tape near the adapter.',
-    color: 'Black',
-    location_found: 'Engineering Lab Room 301',
-    finder_contact: 'youssef.mahmoud@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-bottle-1',
-    student_id: 'demo',
-    category: 'bottle',
-    description: 'Found a large dark blue HydroFlask water bottle with a university sticker on the side.',
-    color: 'Blue',
-    location_found: 'Library Study Hall Floor 2',
-    finder_contact: 'ahmed.hassan@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-notebook-1',
-    student_id: 'demo',
-    category: 'notebook',
-    description: 'Found a red spiral notebook with calculus and linear algebra formulas written inside.',
-    color: 'Red',
-    location_found: 'Math Department Lecture Hall B',
-    finder_contact: 'kareem.tarek@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-headphones-1',
-    student_id: 'demo',
-    category: 'headphones',
-    description: 'Found black Sony noise-cancelling headphones with a small sticker on the left ear cup.',
-    color: 'Black',
-    location_found: 'Library Ground Floor',
-    finder_contact: 'sara.ali@sewedy.edu.eg',
-    status: 'active',
-  },
-  {
-    id: 'demo-found-id-1',
-    student_id: 'demo',
-    category: 'id_card',
-    description: 'Found a blue university student ID card near the cafeteria with a photo and barcode.',
-    color: 'Blue',
-    location_found: 'Main Cafeteria Building A',
-    finder_contact: 'omar.khalil@sewedy.edu.eg',
-    status: 'active',
-  },
-].map((report, index) => ({
-  ...report,
-  time_found: new Date(Date.now() - (index + 1) * 60 * 60 * 1000).toISOString(),
-  created_at: new Date(Date.now() - (index + 1) * 60 * 60 * 1000).toISOString(),
-}))
-
 function readStorage(key, fallback = []) {
   try {
     return JSON.parse(window.localStorage.getItem(key)) || fallback
@@ -174,7 +97,7 @@ function makeExplanation(featureScores, found) {
 
 function localRankMatches(lostReport) {
   const lostId = lostReport.id || lostReport.lost_report_id
-  const foundReports = [...readStorage(STORAGE_KEYS.found), ...DEMO_FOUND_REPORTS]
+  const foundReports = readStorage(STORAGE_KEYS.found)
     .filter((report) => report.status !== 'closed')
 
   const matches = foundReports.map((found) => {
