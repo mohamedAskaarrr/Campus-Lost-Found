@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const useStore = create((set, get) => ({
+const useStore = create((set) => ({
   /* Auth (stub — Insforge handles real auth) */
   user: null,
   setUser: (user) => set({ user }),

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Phone, Mail } from 'lucide-react'
 import useStore from '../store/useStore'
+import { getMatches } from '../api/client'
 
 const FEATURE_LABELS = {
   text_similarity: { label: 'Description Match', color: 'var(--primary)' },
@@ -37,15 +38,38 @@ function FeatureRow({ featureKey, value }) {
 export default function MatchDetail() {
   const { lostId, foundId } = useParams()
   const navigate = useNavigate()
-  const matchResults = useStore(s => s.matchResults)
+  const { matchResults, setMatchResults } = useStore()
+  const [loading, setLoading] = useState(false)
+  const [loadedFromApi, setLoadedFromApi] = useState(false)
   const matches = matchResults[lostId] || []
   const match = matches.find(m => m.found_report_id === foundId)
+
+  useEffect(() => {
+    setLoadedFromApi(false)
+  }, [lostId, foundId])
+
+  useEffect(() => {
+    if (match || loading || loadedFromApi) return
+
+    setLoading(true)
+    getMatches(lostId)
+      .then(({ data }) => setMatchResults(lostId, Array.isArray(data) ? data : []))
+      .catch(() => {})
+      .finally(() => {
+        setLoadedFromApi(true)
+        setLoading(false)
+      })
+  }, [lostId, match, loading, loadedFromApi, setMatchResults])
 
   if (!match) {
     return (
       <div className="page-enter" style={{ padding: '80px 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--neutral-mid)' }}>Match not found. Go back and try again.</p>
-        <button className="btn btn-primary" onClick={() => navigate(-1)} style={{ marginTop: 16 }}>Go Back</button>
+        <p style={{ color: 'var(--neutral-mid)' }}>
+          {loading ? 'Loading match details...' : 'Match not found. Go back and try again.'}
+        </p>
+        {!loading && (
+          <button className="btn btn-primary" onClick={() => navigate(-1)} style={{ marginTop: 16 }}>Go Back</button>
+        )}
       </div>
     )
   }

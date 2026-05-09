@@ -60,14 +60,14 @@ export default function MatchResults() {
           const { data } = await findMatches(payload)
           setMatchResults(lostId, data.matches || [])
         }
-      } catch (err) {
+      } catch (_) {
         setError('Could not load match results. Make sure the AI engine is running.')
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [lostId])
+  }, [lostId, cached, setMatchResults])
 
   const matches = cached || []
 

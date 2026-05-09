@@ -54,7 +54,9 @@ export default function ReportLost() {
         set('category', data.category)
         showToast(`AI detected: ${data.category.replace('_', ' ')} (${Math.round(data.confidence * 100)}% confidence)`, 'info')
       }
-    } catch (_) {}
+    } catch (_) {
+      // Classification is optional; form submission should not depend on it.
+    }
     finally { setClassifying(false) }
   }
 

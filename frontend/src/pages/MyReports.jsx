@@ -17,7 +17,7 @@ export default function MyReports() {
       .then(({ data }) => setLostReports(Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [])
+  }, [setLostReports])
 
   const filtered = filter === 'all'
     ? lostReports

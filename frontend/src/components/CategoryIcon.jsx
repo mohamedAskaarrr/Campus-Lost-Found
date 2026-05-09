@@ -12,7 +12,7 @@ const CATEGORY_ICONS = {
   other: PackageSearch,
 }
 
-export function getCategoryIcon(category) {
+function getCategoryIcon(category) {
   return CATEGORY_ICONS[category] || PackageSearch
 }
 

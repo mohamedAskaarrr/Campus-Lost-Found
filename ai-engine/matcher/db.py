@@ -72,7 +72,13 @@ def save_match_results(lost_report_id: str, candidates: list) -> None:
             "found_report_id": c.found_report_id,
             "confidence_score": c.confidence_score,
             "explanation": c.explanation,
-            "feature_scores": c.feature_scores,
+            "feature_scores": {
+                "text_similarity": c.feature_scores.get("text", 0.0),
+                "category_match": c.feature_scores.get("category", 0.0),
+                "color_match": c.feature_scores.get("color", 0.0),
+                "location_match": c.feature_scores.get("location", 0.0),
+                "time_proximity": c.feature_scores.get("time", 0.0),
+            },
         })
 
     try:
@@ -82,6 +88,22 @@ def save_match_results(lost_report_id: str, candidates: list) -> None:
         logger.info(f"Saved {len(candidates)} match results to Insforge for {lost_report_id}.")
     except Exception as e:
         logger.error(f"Insforge save error: {e}")
+
+
+def delete_match_results(lost_report_id: str) -> None:
+    """
+    Remove stale match rows before saving a fresh ranking for the lost report.
+    """
+    if not lost_report_id:
+        return
+
+    try:
+        url = f"{INSFORGE_URL}/match_results?lost_report_id=eq.{lost_report_id}"
+        resp = requests.delete(url, headers=_headers(), timeout=10)
+        resp.raise_for_status()
+        logger.info(f"Deleted stale match results for {lost_report_id}.")
+    except Exception as e:
+        logger.error(f"Insforge delete error: {e}")
 
 
 def _parse_dt(value) -> datetime:

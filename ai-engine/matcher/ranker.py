@@ -58,11 +58,10 @@ def rank_matches(
 ) -> list[MatchCandidate]:
     """
     Run the full matching pipeline:
-      1. CSP pre-filter  (temporal + category hard constraints)
-      2. TF-IDF text similarity
-      3. Individual feature scoring
-      4. Weighted composite score
-      5. Sort descending, return top-K
+      1. TF-IDF text similarity
+      2. Individual feature scoring
+      3. Weighted composite score
+      4. Sort descending, return top-K
 
     Args:
         lost: The lost item report to match against.
@@ -87,12 +86,6 @@ def rank_matches(
     candidates: list[MatchCandidate] = []
 
     for i, found in enumerate(found_items):
-        # ── CSP Hard Constraints ──────────────────────────────────
-        # Temporal constraint: item cannot be found before it was lost
-        if found.time_found < lost.time_lost:
-            logger.debug(f"CSP filtered {found.id}: found before lost")
-            continue
-
         # ── Feature Scores ────────────────────────────────────────
         feature_scores = {
             "text": text_scores[i],

@@ -167,8 +167,8 @@ class TestLocationScorer:
 # ──────────────────────────────────────────────
 
 class TestTimeScorer:
-    def test_found_before_lost_returns_zero(self):
-        assert score_time(NOW, BEFORE) == 0.0
+    def test_found_before_lost_uses_proximity(self):
+        assert score_time(NOW, BEFORE) > 0.9
 
     def test_same_time_returns_one(self):
         score = score_time(NOW, NOW)
@@ -215,11 +215,11 @@ class TestRanker:
         lost = make_lost()
         assert rank_matches(lost, []) == []
 
-    def test_csp_filters_found_before_lost(self):
+    def test_found_before_lost_is_still_ranked_by_similarity(self):
         lost = make_lost()
         found = make_found(time_found=BEFORE)
         results = rank_matches(lost, [found])
-        assert results == []
+        assert len(results) == 1
 
     def test_identical_item_ranks_first(self):
         lost = make_lost()

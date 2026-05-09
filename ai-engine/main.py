@@ -320,6 +320,15 @@ def find_matches(request: MatchRequest):
 
     candidates = rank_matches(lost, found_items)
 
+    if db_items:
+        try:
+            from matcher.db import delete_match_results, save_match_results
+
+            delete_match_results(request.lost_report_id)
+            save_match_results(request.lost_report_id, candidates)
+        except Exception as e:
+            logger.warning(f"Could not persist match results: {e}")
+
     results = []
     for c in candidates:
         meta = found_meta.get(c.found_report_id, {})

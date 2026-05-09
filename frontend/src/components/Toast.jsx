@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react'
+import { CheckCircle, AlertCircle, Info } from 'lucide-react'
 import useStore from '../store/useStore'
 
 const ICONS = { success: CheckCircle, error: AlertCircle, info: Info }

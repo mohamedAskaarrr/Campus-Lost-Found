@@ -135,9 +135,8 @@ def _to_utc(dt: datetime) -> datetime:
 
 def score_time(time_lost: datetime, time_found: datetime) -> float:
     """
-    Temporal proximity score. Found date must be >= lost date (hard constraint).
-    Score decays linearly from 1.0 (instant) to 0.0 at 7 days.
-    Returns 0.0 if found before lost (impossible match).
+    Temporal proximity score.
+    Score decays from 1.0 for close timestamps toward 0.0 over 7 days.
     """
     if not time_lost or not time_found:
         return 0.5  # neutral
@@ -145,10 +144,7 @@ def score_time(time_lost: datetime, time_found: datetime) -> float:
     tl = _to_utc(time_lost)
     tf = _to_utc(time_found)
 
-    delta_hours = (tf - tl).total_seconds() / 3600
-
-    if delta_hours < 0:
-        return 0.0  # CSP violation: item found before it was lost
+    delta_hours = abs((tf - tl).total_seconds()) / 3600
 
     # Exponential decay — feel more natural than linear
     score = math.exp(-delta_hours / (_MAX_HOURS / 3))
